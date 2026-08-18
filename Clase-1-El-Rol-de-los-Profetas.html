@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario: Los Profetas del Antiguo Testamento</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div id="quiz-container" class="bg-white rounded-xl shadow-lg p-6 md:p-8 max-w-2xl w-full">
+        <!-- Pantalla de Inicio -->
+        <div id="start-screen" class="text-center fade-in">
+            <h1 class="text-3xl font-bold text-gray-800 mb-4">Clase 1: El Rol de los Profetas</h1>
+            <p class="text-gray-600 mb-8 text-lg">Pon a prueba tus conocimientos sobre los profetas en el Antiguo Testamento con este cuestionario de 7 preguntas.</p>
+            <button onclick="startQuiz()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg transition duration-300 text-lg w-full sm:w-auto">
+                Comenzar Cuestionario
+            </button>
+        </div>
+
+        <!-- Contenedor de Preguntas -->
+        <div id="question-screen" class="hidden fade-in">
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-sm font-semibold text-gray-500 uppercase tracking-wider" id="question-counter">Pregunta 1 de 7</span>
+            </div>
+            
+            <h2 id="question-text" class="text-xl md:text-2xl font-bold text-gray-800 mb-6 min-h-[4rem]">
+                <!-- La pregunta se inyectará aquí -->
+            </h2>
+            
+            <div id="options-container" class="space-y-4">
+                <!-- Las opciones se inyectarán aquí -->
+            </div>
+            
+            <div id="feedback-container" class="mt-6 hidden">
+                <p id="feedback-text" class="text-lg font-medium p-4 rounded-lg mb-4"></p>
+                <button id="next-button" onclick="nextQuestion()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 w-full sm:w-auto float-right hidden">
+                    Siguiente Pregunta
+                </button>
+                <button id="finish-button" onclick="showResults()" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded-lg transition duration-300 w-full sm:w-auto float-right hidden">
+                    Ver Calificación Final
+                </button>
+                <div class="clear-both"></div>
+            </div>
+        </div>
+
+        <!-- Pantalla de Resultados -->
+        <div id="result-screen" class="hidden text-center fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 mb-2">¡Cuestionario Completado!</h2>
+            <p class="text-gray-600 mb-6 text-lg">Aquí están tus resultados:</p>
+            
+            <div class="bg-gray-50 rounded-lg p-6 mb-8 inline-block shadow-inner border border-gray-200">
+                <p class="text-xl text-gray-700 mb-2">Tu nota final es:</p>
+                <p class="text-6xl font-black" id="final-score">
+                    <span id="score-number" class="text-blue-600">0</span><span class="text-3xl text-gray-400">/7</span>
+                </p>
+                <p id="score-message" class="mt-4 text-lg font-medium text-gray-700"></p>
+            </div>
+            <br>
+            <button onclick="restartQuiz()" class="bg-gray-800 hover:bg-gray-900 text-white font-bold py-3 px-8 rounded-lg transition duration-300 text-lg w-full sm:w-auto">
+                Reintentar Cuestionario
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "¿Cuál de estos personajes bíblicos señala Jeremías como el punto de inicio del oficio profético con sus varias funciones?",
+                options: ["Abraham", "Moisés", "Aarón"],
+                answer: 1,
+                explanation: "Jeremías revela que el origen divino del oficio profético con sus varias funciones comenzó con Moisés, aunque Dios habló a hombres antes que él."
+            },
+            {
+                question: "Según el uso primario del término 'nabhi' en el Antiguo Testamento, ¿cuál era la función principal del profeta?",
+                options: ["Pronunciar un mensaje en nombre de Dios, sin ser el originador del mismo.", "Escribir la historia de Israel para las futuras generaciones.", "Realizar sacrificios en el templo en lugar de los sacerdotes."],
+                answer: 0,
+                explanation: "El profeta (nabhi) hablaba las palabras de Dios en nombre de Dios; no originaba el mensaje, sencillamente lo proclamaba."
+            },
+            {
+                question: "¿Qué enfatiza el término 'vidente' (ro'eh o hozeh) en contraste con la palabra 'nabhi'?",
+                options: ["El liderazgo político del profeta sobre la nación.", "La obra activa de proclamar el mensaje en las plazas.", "La recepción del mensaje mediante sueños, visiones o iluminación."],
+                answer: 2,
+                explanation: "Mientras 'nabhi' destaca la proclamar activa, 'vidente' enfatiza cómo el profeta recibía la información al 'ver' el mensaje de Dios."
+            },
+            {
+                question: "¿Cuál de las siguientes opciones describe correctamente uno de los tres aspectos básicos del papel mediador de los profetas?",
+                options: ["Eran predicadores que introducían nuevas leyes para sustituir las de Moisés.", "Eran predictores que predecían juicios o bendiciones venideras.", "Eran sacerdotes que representaban al pueblo delante de Dios."],
+                answer: 1,
+                explanation: "Los tres aspectos básicos eran: predicadores (de la ley ya revelada), predictores (de eventos venideros según las necesidades de su tiempo) y vigías."
+            },
+            {
+                question: "Como 'vigías', ¿cuál era probablemente la función primaria del profeta en Israel?",
+                options: ["Llamar a Israel a obedecer la ley, advirtiéndoles de juicio si rehusaban.", "Actuar como generales en las batallas contra las naciones vecinas.", "Asegurarse de que los reyes recaudaran los impuestos correctamente."],
+                answer: 0,
+                explanation: "Los profetas actuaban como vigías sobre los líderes y el pueblo, siendo guardianes de la constitución de Israel y advirtiendo sobre el juicio por desobediencia."
+            },
+            {
+                question: "¿Por qué los profetas se asociaban a menudo con reyes y gobernantes, sirviendo como consejeros?",
+                options: ["Porque aspiraban a alcanzar posiciones de alto poder político.", "Para influenciar mejor a la nación hacia la verdad de Dios y prosperar el reino teocrático.", "Porque los reyes eran los únicos autorizados para escuchar profecías."],
+                answer: 1,
+                explanation: "Su actividad política estaba subordinada a un fin religioso: influenciar a través del rey para que la nación volviera a la verdad de Dios."
+            },
+            {
+                question: "¿Qué indicador visible utilizaban regularmente los profetas para mostrar la condición espiritual de Israel en relación a su obediencia a Dios?",
+                options: ["La riqueza acumulada en el tesoro del rey.", "El tamaño del ejército de Israel.", "La condición de la tierra (prosperidad o sequía/hambre)."],
+                answer: 2,
+                explanation: "La condición de la tierra era un indicador visible; la obediencia traía prosperidad a la tierra, mientras que la desobediencia causaba sequía y hambre."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let canAnswer = true;
+
+        const startScreen = document.getElementById('start-screen');
+        const questionScreen = document.getElementById('question-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const questionCounter = document.getElementById('question-counter');
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackText = document.getElementById('feedback-text');
+        const nextButton = document.getElementById('next-button');
+        const finishButton = document.getElementById('finish-button');
+        const finalScore = document.getElementById('score-number');
+        const scoreMessage = document.getElementById('score-message');
+
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            questionScreen.classList.remove('hidden');
+            currentQuestionIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            canAnswer = true;
+            feedbackContainer.classList.add('hidden');
+            nextButton.classList.add('hidden');
+            finishButton.classList.add('hidden');
+            
+            // Reiniciar animaciones
+            questionScreen.classList.remove('fade-in');
+            void questionScreen.offsetWidth; // trigger reflow
+            questionScreen.classList.add('fade-in');
+
+            const currentQ = questions[currentQuestionIndex];
+            questionCounter.innerText = `Pregunta ${currentQuestionIndex + 1} de ${questions.length}`;
+            questionText.innerText = currentQ.question;
+            
+            optionsContainer.innerHTML = '';
+            
+            currentQ.options.forEach((option, index) => {
+                const button = document.createElement('button');
+                button.className = 'w-full text-left p-4 rounded-lg border-2 border-gray-200 hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 focus:outline-none text-gray-700 font-medium text-lg';
+                button.innerText = option;
+                button.onclick = () => selectOption(index, button);
+                optionsContainer.appendChild(button);
+            });
+        }
+
+        function selectOption(selectedIndex, selectedButton) {
+            if (!canAnswer) return;
+            canAnswer = false;
+
+            const currentQ = questions[currentQuestionIndex];
+            const buttons = optionsContainer.getElementsByTagName('button');
+
+            // Deshabilitar todos los botones
+            for (let btn of buttons) {
+                btn.classList.add('cursor-not-allowed', 'opacity-70');
+                btn.onclick = null;
+            }
+
+            if (selectedIndex === currentQ.answer) {
+                // Respuesta Correcta
+                score++;
+                selectedButton.classList.remove('border-gray-200', 'hover:border-blue-500', 'hover:bg-blue-50');
+                selectedButton.classList.add('border-green-500', 'bg-green-100', 'text-green-800');
+                
+                feedbackText.innerHTML = `<strong>¡Correcto!</strong> ${currentQ.explanation}`;
+                feedbackText.className = 'text-lg font-medium p-4 rounded-lg mb-4 bg-green-50 text-green-800 border border-green-200';
+            } else {
+                // Respuesta Incorrecta
+                selectedButton.classList.remove('border-gray-200', 'hover:border-blue-500', 'hover:bg-blue-50');
+                selectedButton.classList.add('border-red-500', 'bg-red-100', 'text-red-800');
+                
+                // Resaltar la correcta
+                buttons[currentQ.answer].classList.remove('border-gray-200');
+                buttons[currentQ.answer].classList.add('border-green-500', 'bg-green-50', 'text-green-700');
+                
+                feedbackText.innerHTML = `<strong>Incorrecto.</strong> ${currentQ.explanation}`;
+                feedbackText.className = 'text-lg font-medium p-4 rounded-lg mb-4 bg-red-50 text-red-800 border border-red-200';
+            }
+
+            feedbackContainer.classList.remove('hidden');
+
+            if (currentQuestionIndex < questions.length - 1) {
+                nextButton.classList.remove('hidden');
+            } else {
+                finishButton.classList.remove('hidden');
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function showResults() {
+            questionScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            
+            finalScore.innerText = score;
+            
+            if (score === 7) {
+                scoreMessage.innerText = "¡Excelente! Tienes un dominio perfecto del tema.";
+                finalScore.className = "text-green-600";
+            } else if (score >= 4) {
+                scoreMessage.innerText = "¡Buen trabajo! Tienes un buen entendimiento básico.";
+                finalScore.className = "text-yellow-500";
+            } else {
+                scoreMessage.innerText = "Sigue repasando la lectura para afianzar estos conceptos.";
+                finalScore.className = "text-red-500";
+            }
+        }
+
+        function restartQuiz() {
+            resultScreen.classList.add('hidden');
+            startQuiz();
+        }
+    </script>
+</body>
+</html>
