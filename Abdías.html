@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario sobre el Libro de Abdías</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .question-card {
+            transition: all 0.3s ease;
+        }
+        .option-button {
+            transition: background-color 0.2s ease, transform 0.1s ease;
+        }
+        .option-button:active:not(:disabled) {
+            transform: scale(0.98);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Custom scrollbar for better aesthetics */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8; 
+        }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen text-slate-800 font-sans p-4 md:p-8">
+
+    <div class="max-w-3xl mx-auto">
+        <header class="text-center mb-10 fade-in">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-indigo-900 mb-3 tracking-tight">Cuestionario: El Libro de Abdías</h1>
+            <p class="text-lg text-slate-600">Pon a prueba tu conocimiento sobre el profeta más antiguo.</p>
+        </header>
+
+        <main id="quiz-container" class="bg-white rounded-2xl shadow-xl p-6 md:p-10 mb-8 fade-in relative overflow-hidden">
+            <!-- Progress Bar -->
+            <div class="absolute top-0 left-0 w-full h-2 bg-slate-100">
+                <div id="progress-bar" class="h-full bg-indigo-500 transition-all duration-300" style="width: 0%;"></div>
+            </div>
+
+            <!-- Quiz Content (dynamically injected) -->
+            <div id="quiz-content" class="mt-4">
+                <!-- Question will appear here -->
+            </div>
+
+            <!-- Result Summary (hidden by default) -->
+            <div id="result-summary" class="hidden text-center mt-6">
+                <h2 class="text-3xl font-bold text-slate-800 mb-4">¡Cuestionario Completado!</h2>
+                <div class="text-6xl mb-4" id="score-emoji">🏆</div>
+                <p class="text-xl mb-6">Tu puntuación es: <span id="final-score" class="font-bold text-indigo-600"></span></p>
+                <button onclick="restartQuiz()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-full transition-colors duration-200">
+                    Intentar de Nuevo
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const quizData = [
+            {
+                question: "¿Qué significa el nombre 'Abdías' según el documento?",
+                options: ["Profeta del Señor", "Siervo de Jehová", "Mensajero de Dios", "Voz que clama"],
+                correctAnswer: "Siervo de Jehová"
+            },
+            {
+                question: "¿Cuál es la fecha estimada de redacción del libro de Abdías que lo posiciona como el más antiguo de los profetas?",
+                options: ["722 a.C.", "586 a.C.", "845 a.C.", "400 a.C."],
+                correctAnswer: "845 a.C."
+            },
+            {
+                question: "¿Contra qué nación vecina de Israel está dirigido principalmente el mensaje de juicio de Abdías?",
+                options: ["Egipto", "Asiria", "Babilonia", "Edom"],
+                correctAnswer: "Edom"
+            },
+            {
+                question: "¿De qué personaje bíblico descendían los edomitas, descritos en el libro como parientes de sangre de Israel?",
+                options: ["Ismael", "Lot", "Esaú", "Jacob"],
+                correctAnswer: "Esaú"
+            },
+            {
+                question: "¿Durante el reinado de qué monarca de Judá ocurrió el ataque a Jerusalén que sirve de clave para fechar el libro?",
+                options: ["Rey Josías", "Rey Ezequías", "Rey Joram", "Rey Acaz"],
+                correctAnswer: "Rey Joram"
+            },
+            {
+                question: "Según el resumen del libro, ¿cuáles fueron los dos pecados principales por los que Edom sería juzgado sin remisión?",
+                options: ["Idolatría y robo", "La soberbia y el daño infligido a Judá.", "Alianzas con Egipto y rechazo a los profetas", "Inmoralidad y falsos testimonios"],
+                correctAnswer: "La soberbia y el daño infligido a Judá."
+            },
+            {
+                question: "¿Qué característica de la capital de Edom les daba una falsa confianza en que nunca serían destruidos?",
+                options: ["Su inexpugnabilidad natural por estrechos desfiladeros.", "Su gran riqueza en oro y plata", "Su enorme ejército de carros", "Sus murallas construidas por gigantes"],
+                correctAnswer: "Su inexpugnabilidad natural por estrechos desfiladeros."
+            },
+            {
+                question: "¿Cómo está estructurado el libro de Abdías en cuanto a su división por capítulos?",
+                options: ["Tiene 3 capítulos.", "Tiene 21 capítulos.", "No tiene división en capítulos.", "Se divide en dos secciones principales."],
+                correctAnswer: "No tiene división en capítulos."
+            },
+            {
+                question: "¿Qué profetas posteriores muestran familiaridad con el mensaje de Abdías, evidenciando su datación temprana?",
+                options: ["Isaías y Miqueas", "Ezequiel y Daniel", "Jeremías, Amós y Joel.", "Hageo y Zacarías"],
+                correctAnswer: "Jeremías, Amós y Joel."
+            },
+            {
+                question: "¿Cuál es la expectativa final para Israel descrita en los últimos versículos del libro de Abdías?",
+                options: ["Serán exiliados para siempre.", "Dios le dará toda la tierra prometida a Abraham.", "Construirán un nuevo templo más grande.", "Conquistarán todo el mundo conocido."],
+                correctAnswer: "Dios le dará toda la tierra prometida a Abraham."
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        let score = 0;
+
+        const quizContent = document.getElementById('quiz-content');
+        const resultSummary = document.getElementById('result-summary');
+        const progressBar = document.getElementById('progress-bar');
+        const finalScoreSpan = document.getElementById('final-score');
+        const scoreEmoji = document.getElementById('score-emoji');
+
+        function loadQuestion() {
+            if (currentQuestionIndex >= quizData.length) {
+                showResults();
+                return;
+            }
+
+            const currentQuestion = quizData[currentQuestionIndex];
+            
+            // Update progress bar
+            const progressPercentage = ((currentQuestionIndex) / quizData.length) * 100;
+            progressBar.style.width = `${progressPercentage}%`;
+
+            let optionsHtml = '';
+            // Randomize options for slightly better replayability (optional, keeping it simple for now)
+            currentQuestion.options.forEach((option, index) => {
+                optionsHtml += `
+                    <button 
+                        class="option-button w-full text-left p-4 mb-3 border border-slate-200 rounded-xl hover:border-indigo-400 hover:bg-indigo-50 font-medium text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50"
+                        onclick="checkAnswer('${option.replace(/'/g, "\\'")}', this)"
+                    >
+                        ${option}
+                    </button>
+                `;
+            });
+
+            quizContent.innerHTML = `
+                <div class="question-card fade-in">
+                    <div class="flex justify-between items-center mb-6">
+                        <span class="text-sm font-semibold text-slate-400 uppercase tracking-wider">Pregunta ${currentQuestionIndex + 1} de ${quizData.length}</span>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6 leading-tight">${currentQuestion.question}</h2>
+                    <div class="options-container flex flex-col gap-2">
+                        ${optionsHtml}
+                    </div>
+                    <div id="feedback-area" class="mt-6 h-12 flex items-center justify-center rounded-xl font-medium hidden"></div>
+                    <button id="next-btn" onclick="nextQuestion()" class="mt-6 w-full hidden bg-slate-800 hover:bg-slate-900 text-white font-semibold py-3 px-6 rounded-xl transition-colors duration-200">
+                        Siguiente Pregunta
+                    </button>
+                </div>
+            `;
+        }
+
+        function checkAnswer(selectedOption, buttonElement) {
+            const currentQuestion = quizData[currentQuestionIndex];
+            const isCorrect = selectedOption === currentQuestion.correctAnswer;
+            const buttons = document.querySelectorAll('.option-button');
+            const feedbackArea = document.getElementById('feedback-area');
+            const nextBtn = document.getElementById('next-btn');
+
+            // Disable all buttons
+            buttons.forEach(btn => btn.disabled = true);
+
+            if (isCorrect) {
+                score++;
+                buttonElement.classList.remove('border-slate-200', 'hover:border-indigo-400', 'hover:bg-indigo-50');
+                buttonElement.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                
+                feedbackArea.textContent = '¡Correcto!';
+                feedbackArea.classList.remove('hidden', 'bg-red-50', 'text-red-700');
+                feedbackArea.classList.add('bg-green-50', 'text-green-700');
+            } else {
+                buttonElement.classList.remove('border-slate-200', 'hover:border-indigo-400', 'hover:bg-indigo-50');
+                buttonElement.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+                
+                // Highlight correct answer
+                buttons.forEach(btn => {
+                    if (btn.innerText.trim() === currentQuestion.correctAnswer) {
+                        btn.classList.remove('border-slate-200', 'hover:border-indigo-400', 'hover:bg-indigo-50');
+                        btn.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                    }
+                });
+
+                feedbackArea.textContent = 'Incorrecto. La respuesta correcta es: ' + currentQuestion.correctAnswer;
+                feedbackArea.classList.remove('hidden', 'bg-green-50', 'text-green-700');
+                feedbackArea.classList.add('bg-red-50', 'text-red-700');
+            }
+
+            nextBtn.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            loadQuestion();
+        }
+
+        function showResults() {
+            quizContent.classList.add('hidden');
+            resultSummary.classList.remove('hidden');
+            progressBar.style.width = '100%';
+
+            finalScoreSpan.textContent = `${score} de ${quizData.length}`;
+
+            // Set emoji based on score
+            const percentage = score / quizData.length;
+            if (percentage === 1) {
+                scoreEmoji.textContent = '👑'; // Perfect
+            } else if (percentage >= 0.8) {
+                scoreEmoji.textContent = '🌟'; // Great
+            } else if (percentage >= 0.6) {
+                scoreEmoji.textContent = '👍'; // Good
+            } else {
+                scoreEmoji.textContent = '📚'; // Needs study
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            quizContent.classList.remove('hidden');
+            resultSummary.classList.add('hidden');
+            loadQuestion();
+        }
+
+        // Initialize quiz on load
+        window.onload = loadQuestion;
+    </script>
+</body>
+</html>
