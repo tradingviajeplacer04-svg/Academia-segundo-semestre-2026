@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario Interactivo: Joel y Jonás</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <!-- Canvas Confetti -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f3ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#1e1b4b',
+                        },
+                        gold: {
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .option-card {
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option-card:hover:not(.disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.1);
+        }
+        .animate-fade-in {
+            animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-full flex flex-col justify-between selection:bg-brand-500 selection:text-white">
+
+    <!-- Background Pattern -->
+    <div class="fixed inset-0 z-0 opacity-10 pointer-events-none bg-[radial-gradient(#6366f1_1px,transparent_1px)] [background-size:24px_24px]"></div>
+
+    <!-- Header Navigation -->
+    <header class="relative z-10 border-b border-slate-800 bg-slate-900/80 backdrop-blur-md sticky top-0">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white shadow-lg shadow-brand-500/30">
+                    <i class="fa-solid fa-scroll text-lg"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif font-bold text-xl text-white leading-none">Joel & Jonás</h1>
+                    <p class="text-xs text-slate-400 font-medium mt-1">Evaluación de Libros Proféticos</p>
+                </div>
+            </div>
+
+            <!-- Header Controls -->
+            <div id="header-stats" class="hidden items-center gap-4 text-sm font-medium">
+                <div class="bg-slate-800/80 px-3.5 py-1.5 rounded-lg border border-slate-700/60 flex items-center gap-2">
+                    <span class="text-slate-400">Progreso:</span>
+                    <span id="header-progress" class="text-brand-400 font-bold">1/10</span>
+                </div>
+                <div class="bg-slate-800/80 px-3.5 py-1.5 rounded-lg border border-slate-700/60 flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-400"></i>
+                    <span id="header-score" class="text-emerald-400 font-bold">0 pts</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="relative z-10 flex-grow max-w-4xl w-full mx-auto px-4 sm:px-6 py-8 flex items-center justify-center">
+
+        <!-- SCREEN 1: START SCREEN -->
+        <section id="start-screen" class="w-full animate-fade-in">
+            <div class="bg-slate-800/90 border border-slate-700/70 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl relative overflow-hidden">
+                <div class="absolute -top-24 -right-24 w-64 h-64 bg-brand-600/20 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-300 text-xs font-semibold mb-6">
+                    <i class="fa-solid fa-book-open"></i> Guía de Estudio Profético
+                </div>
+
+                <h2 class="font-serif text-3xl sm:text-4xl font-bold text-white mb-4 leading-tight">
+                    Desafío Bíblico: Los Mensajes de Joel y Jonás
+                </h2>
+                <p class="text-slate-300 text-base sm:text-lg mb-8 leading-relaxed">
+                    Pon a prueba tus conocimientos sobre la teología del <strong>Día de Jehová</strong>, el juicio de las naciones, la soberanía divina y la extensión universal de la <strong>gracia de Dios</strong>.
+                </p>
+
+                <!-- Settings / Filters -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+                    <!-- Filter Category -->
+                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-700/50">
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Sección Temática</label>
+                        <select id="category-select" class="w-full bg-slate-800 text-white border border-slate-600 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-brand-500">
+                            <option value="all">Todos los Libros (10 Preguntas)</option>
+                            <option value="joel">Libro de Joel (5 Preguntas)</option>
+                            <option value="jonas">Libro de Jonás (5 Preguntas)</option>
+                        </select>
+                    </div>
+
+                    <!-- Quiz Mode -->
+                    <div class="bg-slate-900/60 p-4 rounded-2xl border border-slate-700/50">
+                        <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Modo de Aprendizaje</label>
+                        <select id="mode-select" class="w-full bg-slate-800 text-white border border-slate-600 rounded-xl px-3.5 py-2.5 text-sm focus:outline-none focus:border-brand-500">
+                            <option value="study">Modo Estudio (Retroalimentación Inmediata)</option>
+                            <option value="exam">Modo Examen (Resultados al Final)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Features list -->
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-8">
+                    <div class="flex items-center gap-2.5 text-xs sm:text-sm text-slate-300 bg-slate-900/40 p-3 rounded-xl border border-slate-800">
+                        <i class="fa-solid fa-circle-check text-brand-400"></i>
+                        <span>Análisis exegético</span>
+                    </div>
+                    <div class="flex items-center gap-2.5 text-xs sm:text-sm text-slate-300 bg-slate-900/40 p-3 rounded-xl border border-slate-800">
+                        <i class="fa-solid fa-layer-group text-brand-400"></i>
+                        <span>Opciones simétricas</span>
+                    </div>
+                    <div class="flex items-center gap-2.5 text-xs sm:text-sm text-slate-300 bg-slate-900/40 p-3 rounded-xl border border-slate-800">
+                        <i class="fa-solid fa-graduation-cap text-brand-400"></i>
+                        <span>Explicación detallada</span>
+                    </div>
+                </div>
+
+                <!-- Start Action Button -->
+                <button id="start-btn" class="w-full py-4 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-lg rounded-2xl shadow-xl shadow-brand-600/30 hover:shadow-brand-600/50 transition-all flex items-center justify-center gap-3 group">
+                    <span>Iniciar Cuestionario</span>
+                    <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 2: QUIZ INTERFACE -->
+        <section id="quiz-screen" class="w-full hidden animate-fade-in">
+            <!-- Progress Bar -->
+            <div class="mb-6">
+                <div class="flex justify-between text-xs text-slate-400 mb-2 font-semibold">
+                    <span id="question-tag" class="uppercase tracking-wider text-brand-400">LIBRO DE JOEL</span>
+                    <span id="question-number-text">Pregunta 1 de 10</span>
+                </div>
+                <div class="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden border border-slate-700/50">
+                    <div id="progress-bar-fill" class="h-full bg-gradient-to-r from-brand-500 to-indigo-400 w-0 transition-all duration-500 ease-out"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-slate-800/90 border border-slate-700/70 rounded-3xl p-6 sm:p-8 shadow-2xl backdrop-blur-xl mb-6 relative">
+                <!-- Hint button -->
+                <div class="flex justify-between items-start gap-4 mb-4">
+                    <span id="question-badge" class="px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+                        Teología Profética
+                    </span>
+                    <button id="hint-btn" class="text-xs text-amber-400 hover:text-amber-300 flex items-center gap-1.5 font-medium transition-colors bg-amber-400/10 px-3 py-1.5 rounded-lg border border-amber-400/20">
+                        <i class="fa-regular fa-lightbulb"></i> Ver Pista
+                    </button>
+                </div>
+
+                <!-- Hint Content Box -->
+                <div id="hint-box" class="hidden mb-4 p-3.5 bg-amber-500/10 border border-amber-500/30 rounded-xl text-amber-200 text-xs sm:text-sm animate-fade-in">
+                    <i class="fa-solid fa-circle-info mr-1"></i> <span id="hint-text">Pista aquí</span>
+                </div>
+
+                <!-- Question Text -->
+                <h3 id="question-text" class="text-lg sm:text-xl font-semibold text-white leading-relaxed mb-6">
+                    Texto de la pregunta aquí...
+                </h3>
+
+                <!-- Options Grid -->
+                <div id="options-container" class="space-y-3.5">
+                    <!-- Dynamic Options Inserted Here -->
+                </div>
+
+                <!-- Rationale / Feedback Container -->
+                <div id="rationale-container" class="hidden mt-6 p-5 rounded-2xl border animate-fade-in">
+                    <div class="flex items-center gap-2 mb-2 font-bold text-sm" id="rationale-header">
+                        <i id="rationale-icon" class="fa-solid"></i>
+                        <span id="rationale-title">Explicación</span>
+                    </div>
+                    <p id="rationale-text" class="text-xs sm:text-sm text-slate-200 leading-relaxed"></p>
+                </div>
+            </div>
+
+            <!-- Bottom Navigation Controls -->
+            <div class="flex justify-end items-center">
+                <button id="next-btn" class="hidden py-3.5 px-8 bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 text-white font-bold text-sm sm:text-base rounded-xl shadow-lg shadow-brand-600/30 transition-all items-center gap-2">
+                    <span id="next-btn-text">Siguiente Pregunta</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </section>
+
+        <!-- SCREEN 3: RESULTS SUMMARY -->
+        <section id="results-screen" class="w-full hidden animate-fade-in">
+            <div class="bg-slate-800/90 border border-slate-700/70 rounded-3xl p-6 sm:p-10 shadow-2xl backdrop-blur-xl text-center relative overflow-hidden">
+                <div class="absolute -top-24 -left-24 w-64 h-64 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <!-- Trophy Icon -->
+                <div class="w-20 h-20 mx-auto mb-4 rounded-3xl bg-gradient-to-tr from-amber-500 to-gold-400 flex items-center justify-center text-slate-950 text-3xl shadow-xl shadow-amber-500/20">
+                    <i class="fa-solid fa-trophy"></i>
+                </div>
+
+                <h2 class="font-serif text-3xl font-bold text-white mb-2">¡Cuestionario Finalizado!</h2>
+                <p id="score-feedback" class="text-slate-300 text-sm sm:text-base mb-8">Has completado satisfactoriamente el estudio de Joel y Jonás.</p>
+
+                <!-- Score Circle & Metrics -->
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-slate-900/60 p-5 rounded-2xl border border-slate-700/50 flex flex-col items-center justify-center">
+                        <span class="text-slate-400 text-xs font-semibold uppercase mb-1">Calificación</span>
+                        <span id="score-percentage" class="text-3xl font-extrabold text-brand-400">0%</span>
+                    </div>
+                    <div class="bg-slate-900/60 p-5 rounded-2xl border border-slate-700/50 flex flex-col items-center justify-center">
+                        <span class="text-slate-400 text-xs font-semibold uppercase mb-1">Aciertos</span>
+                        <span id="score-count" class="text-3xl font-extrabold text-emerald-400">0 / 10</span>
+                    </div>
+                    <div class="bg-slate-900/60 p-5 rounded-2xl border border-slate-700/50 flex flex-col items-center justify-center">
+                        <span class="text-slate-400 text-xs font-semibold uppercase mb-1">Puntos Totales</span>
+                        <span id="score-points" class="text-3xl font-extrabold text-amber-400">0 pts</span>
+                    </div>
+                </div>
+
+                <!-- Accordion / Detailed Breakdown -->
+                <div class="text-left mb-8">
+                    <h4 class="font-bold text-white text-base mb-4 flex items-center justify-between">
+                        <span>Revisión de Respuestas</span>
+                        <span class="text-xs text-slate-400 font-normal">Toca para desplegar</span>
+                    </h4>
+                    <div id="review-list" class="space-y-3 max-h-80 overflow-y-auto pr-2 custom-scrollbar">
+                        <!-- Dynamic Review Items -->
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <button id="restart-btn" class="flex-1 py-3.5 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-rotate-right"></i>
+                        <span>Reintentar Cuestionario</span>
+                    </button>
+                    <button id="home-btn" class="flex-1 py-3.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Volver al Inicio</span>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <p>Basado rigurosamente en las Guías de Estudio Bíblico de los Libros Proféticos de Joel y Jonás.</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Database of Questions strictly derived from study guides
+        const questionsData = [
+            {
+                id: 1,
+                category: "joel",
+                badge: "Biografía y Ministerio",
+                tag: "LIBRO DE JOEL",
+                question: "¿Qué evidencia textual en el libro de Joel sugiere que el profeta no pertenecía a la clase sacerdotal a pesar de desarrollar su ministerio en Jerusalén?",
+                hint: "Observa cómo se refiere Joel a los ministros del santuario durante su llamado al arrepentimiento.",
+                options: [
+                    {
+                        text: "Su discurso dirigido a los sacerdotes como una clase social y religiosa ajena a la suya.",
+                        isCorrect: true,
+                        rationale: "En textos como Joel 2:17, el profeta se dirige a los sacerdotes en segunda persona, refiriéndose a ellos como un grupo funcional distinto al cual él no pertenecía directamente."
+                    },
+                    {
+                        text: "La mención explícita de su linaje tribal perteneciente a la tribu de Judá.",
+                        isCorrect: false,
+                        rationale: "El texto bíblico no especifica la tribu de pertenencia de Joel; únicamente menciona que era hijo de Petuel (Joel 1:1)."
+                    },
+                    {
+                        text: "Su residencia permanente en las zonas rurales alejadas del santuario de Jerusalén.",
+                        isCorrect: false,
+                        rationale: "La guía de estudio señala expresamente que Joel residía y ejercía su ministerio profético directamente en Jerusalén."
+                    },
+                    {
+                        text: "La condena explícita a la existencia de la estructura ceremonial del templo.",
+                        isCorrect: false,
+                        rationale: "Joel no condena el culto ni el templo, sino que convoca a los sacerdotes y al pueblo a convocar una asamblea sagrada en el santuario."
+                    }
+                ]
+            },
+            {
+                id: 2,
+                category: "joel",
+                badge: "Datación Histórica",
+                tag: "LIBRO DE JOEL",
+                question: "¿En qué argumento literario se fundamenta principalmente la datación aproximada de la profecía de Joel hacia el año 830 a.C.?",
+                hint: "Compara el mensaje final de Joel con la apertura profética del libro de Amós.",
+                options: [
+                    {
+                        text: "La mención directa del rey Uzías de Judá al inicio del primer capítulo.",
+                        isCorrect: false,
+                        rationale: "Joel no menciona explícitamente a ningún monarca de la época para fechar su escrito, lo que dificulta su precisión exacta."
+                    },
+                    {
+                        text: "Las palabras finales de Joel adaptadas posteriormente por el profeta Amós.",
+                        isCorrect: true,
+                        rationale: "Amós (ca. 760 a.C.) adopta expresiones clave de Joel (ej. Amós 1:2 con Joel 3:16) presuponiendo que sus oyentes ya conocían la profecía previa de Joel."
+                    },
+                    {
+                        text: "Los registros asirios que confirman la plaga de langostas durante el siglo IX a.C.",
+                        isCorrect: false,
+                        rationale: "La datación no se apoya en inscripciones asirias, sino en la comparación teológica y literaria interna entre Joel y Amós."
+                    },
+                    {
+                        text: "La descripción de la caída e invasión final de la ciudad de Samaria.",
+                        isCorrect: false,
+                        rationale: "Joel dirigió su mensaje al reino del sur (Judá) y no al reino del norte ni a los eventos de Samaria."
+                    }
+                ]
+            },
+            {
+                id: 3,
+                category: "joel",
+                badge: "Estructura Profética",
+                tag: "LIBRO DE JOEL",
+                question: "¿Cómo se articulan las dos grandes secciones del libro de Joel con respecto al concepto central del «día de Jehová»?",
+                hint: "Distingue entre los eventos pasados/históricos (Cap. 1) y la proyección futura (Caps. 2 y 3).",
+                options: [
+                    {
+                        text: "El capítulo 1 condena a las naciones paganas y los capítulos 2 y 3 restauran a Judá.",
+                        isCorrect: false,
+                        rationale: "El capítulo 1 se enfoca en la crisis interna de Judá (langostas y sequía) y no en la condena inicial de las naciones."
+                    },
+                    {
+                        text: "Las plagas pasadas actúan como prefiguración histórica de los juicios futuros.",
+                        isCorrect: true,
+                        rationale: "La plaga de langostas y la sequía histórica (Cap. 1) sirven como analogía pedagógica para anunciar el juicio futuro de la tribulación y el reino mesiánico (Caps. 2 y 3)."
+                    },
+                    {
+                        text: "El capítulo 1 abarca el período babilónico y el capítulo 2 el período greco-romano.",
+                        isCorrect: false,
+                        rationale: "El libro no se divide por imperios secuenciales, sino entre la disciplina histórica inmediata y la profecía escatológica final."
+                    },
+                    {
+                        text: "La primera sección presenta el juicio sacerdotal y la segunda el juicio militar.",
+                        isCorrect: false,
+                        rationale: "La división temática central gira en torno a la visitación histórica reciente frente a la revelación profética futura."
+                    }
+                ]
+            },
+            {
+                id: 4,
+                category: "joel",
+                badge: "Escatología y Pentecostés",
+                tag: "LIBRO DE JOEL",
+                question: "¿Por qué el derramamiento del Espíritu Santo en Pentecostés (Hechos 2) no agotó el cumplimiento de Joel 2:28-32?",
+                hint: "Piensa en los cataclismos astrológicos descritos en el texto que no ocurrieron físicamente en Hechos 2.",
+                options: [
+                    {
+                        text: "La ausencia de los prodigios cósmicos y cataclismos físicos profetizados.",
+                        isCorrect: true,
+                        rationale: "Pentecostés marcó la inauguración del ministerio del Espíritu, pero los prodigios cósmicos (sol oscurecido, luna en sangre) tendrán su cumplimiento literal en el tiempo del fin (Apocalipsis)."
+                    },
+                    {
+                        text: "El rechazo del apóstol Pedro a aplicar directamente el texto de Joel a la Iglesia.",
+                        isCorrect: false,
+                        rationale: "Pedro citó explícitamente a Joel en Hechos 2 para explicar la manifestación del Espíritu Santo como el cumplimiento inaugural de la promesa."
+                    },
+                    {
+                        text: "La restricción del Espíritu únicamente a los discípulos reunidos en el aposento alto.",
+                        isCorrect: false,
+                        rationale: "El pasaje habla del derramamiento sobre toda carne, lo cual trasciende un único evento local restringido a un grupo reducido."
+                    },
+                    {
+                        text: "La falta de referencias a la restauración económica de la tierra de Palestina.",
+                        isCorrect: false,
+                        rationale: "El motivo central de la distinción en este pasaje radica en las señales astronómicas y el juicio final sobre las naciones."
+                    }
+                ]
+            },
+            {
+                id: 5,
+                category: "joel",
+                badge: "Geografía Profética",
+                tag: "LIBRO DE JOEL",
+                question: "¿Qué función teológica asigna el capítulo 3 de Joel al «valle de Josafat»?",
+                hint: "Ubica la geografía adyacente a Jerusalén para la resolución del juicio escatológico.",
+                options: [
+                    {
+                        text: "El refugio exclusivo para la protección de los sacerdotes durante la invasión.",
+                        isCorrect: false,
+                        rationale: "El valle no se presenta como un refugio sacerdotal, sino como el tribunal o escenario divino para las naciones."
+                    },
+                    {
+                        text: "El territorio asignado para el asentamiento de las tribus del reino del norte.",
+                        isCorrect: false,
+                        rationale: "Las tribus del norte no son el objeto de asentamiento geográfico en la visión del capítulo 3."
+                    },
+                    {
+                        text: "El escenario junto a Jerusalén para el juicio divino definitivo sobre las naciones.",
+                        isCorrect: true,
+                        rationale: "El «valle de Josafat» (junto a los muros de Jerusalén) se revela como el lugar donde Dios juzgará a las naciones enemigas antes de instaurar el reino milenial."
+                    },
+                    {
+                        text: "El lugar de conmemoración del pacto sinaítico renovado por el profeta.",
+                        isCorrect: false,
+                        rationale: "El texto lo enmarca estrictamente en el contexto de la gran batalla escatológica y el juicio de las naciones."
+                    }
+                ]
+            },
+            {
+                id: 6,
+                category: "jonas",
+                badge: "Contexto e Identidad",
+                tag: "LIBRO DE JONÁS",
+                question: "¿Durante qué reinado y en qué reino ejerció Jonás su ministerio profético según los registros bíblicos?",
+                hint: "Consulta la referencia histórica cruzada de 2 Reyes 14:25 sobre el profeta hijo de Amitai.",
+                options: [
+                    {
+                        text: "Durante el reinado de Jeroboam II en el reino del norte (Israel).",
+                        isCorrect: true,
+                        rationale: "2 Reyes 14:25 confirma que Jonás, hijo de Amitai, ejercía como profeta en el reino del norte (Israel) bajo Jeroboam II (ca. 780 a.C.)."
+                    },
+                    {
+                        text: "Durante el reinado de Josías en el reino del sur (Judá).",
+                        isCorrect: false,
+                        rationale: "Josías reinó en Judá mucho tiempo después (siglo VII a.C.), mientras que Jonás perteneció al siglo VIII a.C. en Israel."
+                    },
+                    {
+                        text: "Durante el reinado de Roboam tras la división de las doce tribus.",
+                        isCorrect: false,
+                        rationale: "Roboam reinó a finales del siglo X a.C., época bastante anterior a la fecha asignada al ministerio de Jonás."
+                    },
+                    {
+                        text: "Durante el gobierno de Acab y la reina Jezabel en Samaria.",
+                        isCorrect: false,
+                        rationale: "Acab pertenece al siglo IX a.C., tiempo del profeta Elías; Jonás ministró en el siglo VIII a.C."
+                    }
+                ]
+            },
+            {
+                id: 7,
+                category: "jonas",
+                badge: "Motivación Profética",
+                tag: "LIBRO DE JONÁS",
+                question: "Según el contenido del libro de Jonás, ¿cuál fue el verdadero motivo por el cual el profeta intentó huir hacia Tarsis?",
+                hint: "Examina la propia oración y confesión de Jonás en el capítulo 4 al ver perdonada a Nínive.",
+                options: [
+                    {
+                        text: "El temor a la crueldad del ejército asirio y las murallas de Nínive.",
+                        isCorrect: false,
+                        rationale: "Aunque los asirios eran sanguinarios, la desobediencia de Jonás no fue impulsada por cobardía, sino por motivos teológicos."
+                    },
+                    {
+                        text: "Su deseo de evitar que la gracia divina alcanzara a una nación enemiga de Israel.",
+                        isCorrect: true,
+                        rationale: "Jonás confesó (Jonás 4:2) que sabía que Dios era clemente y piadoso. Al ser un ferviente patriota, no quería que la enemiga Nínive recibiera el perdón."
+                    },
+                    {
+                        text: "La falta de recursos económicos para emprender el viaje terrestre hacia el este.",
+                        isCorrect: false,
+                        rationale: "El relato menciona que Jonás incluso pagó el pasaje de un barco hacia Tarsis (oeste), lo cual descarta la falta de medios."
+                    },
+                    {
+                        text: "El rechazo del rey de Israel a concederle el permiso de salida.",
+                        isCorrect: false,
+                        rationale: "El texto bíblico muestra que fue un mandato divino directo sin intermediación o prohibición de las autoridades políticas."
+                    }
+                ]
+            },
+            {
+                id: 8,
+                category: "jonas",
+                badge: "Teología Universal",
+                tag: "LIBRO DE JONÁS",
+                question: "¿Cuál es el propósito teológico central del libro de Jonás frente a la postura de la nación de Israel?",
+                hint: "Considera cómo Israel interpretaba su condición de pueblo escogido con relación a los gentiles.",
+                options: [
+                    {
+                        text: "Corregir el nacionalismo sectario e ilustrar el alcance universal de la gracia de Dios.",
+                        isCorrect: true,
+                        rationale: "El libro demuestra que el amor y la gracia de Dios no se limitan a Israel, sino que abarcan a todas las naciones gentiles dispuestas a arrepentirse."
+                    },
+                    {
+                        text: "Justificar el juicio destructivo que Asiria ejecutaría sobre las diez tribus.",
+                        isCorrect: false,
+                        rationale: "El libro busca la salvación y conversión de Nínive, no teorizar sobre la caída militar posterior del reino del norte."
+                    },
+                    {
+                        text: "Demostrar la superioridad de los profetas de Israel sobre los reyes gentiles.",
+                        isCorrect: false,
+                        rationale: "El profeta es presentado con fallas morales y amargura, mientras que los marineros y ninivitas muestran una actitud piadosa."
+                    },
+                    {
+                        text: "Establecer la obligación de pagar diezmos en tierras extranjeras.",
+                        isCorrect: false,
+                        rationale: "El tema del libro gira en torno al arrepentimiento, la misericordia y la soberanía de Dios sobre la creación."
+                    }
+                ]
+            },
+            {
+                id: 9,
+                category: "jonas",
+                badge: "Providencia Divina",
+                tag: "LIBRO DE JONÁS",
+                question: "¿Qué sucesos providenciales previos se atribuyen a la preparación espiritual de Nínive para responder al mensaje de Jonás?",
+                hint: "Recuerda las evidencias históricas sobre los presagios sanitarios y astronómicos de la época.",
+                options: [
+                    {
+                        text: "La vivencia previa de plagas graves y un eclipse solar considerados presagios divinos.",
+                        isCorrect: true,
+                        rationale: "Las crónicas indican que Nínive había sufrido plagas y un eclipse total de sol, interpretados en el mundo antiguo como señales inminentes de juicio divino."
+                    },
+                    {
+                        text: "Una guerra civil devastadora que debilitó las defensas del rey de Asiria.",
+                        isCorrect: false,
+                        rationale: "Los factores señalados en las guías como preparación espiritual providencial son las plagas y los fenómenos astronómicos."
+                    },
+                    {
+                        text: "La influencia directa de copias de la Ley de Moisés traducidas al idioma asirio.",
+                        isCorrect: false,
+                        rationale: "No existía una traducción ni difusión de la Torá en Nínive antes de la llegada del profeta."
+                    },
+                    {
+                        text: "El testimonio de los marineros de Tarsis que llegaron previamente a la ciudad.",
+                        isCorrect: false,
+                        rationale: "Los marineros paganos del barco regresaron a puerto tras la tempestad y alabaron a Dios, sin viajar a Nínive."
+                    }
+                ]
+            },
+            {
+                id: 10,
+                category: "jonas",
+                badge: "Pedagogía Divina",
+                tag: "LIBRO DE JONÁS",
+                question: "¿Qué lección pedagógica imparte Dios a Jonás a través del episodio de la planta que se secó en el capítulo 4?",
+                hint: "Compara el valor que Jonás dio a una planta efímera frente al valor que Dios da a las almas humanas.",
+                options: [
+                    {
+                        text: "La necesidad de descansar a la sombra durante los días de calor extremo.",
+                        isCorrect: false,
+                        rationale: "La calabacera no se usó simplemente como comodidad física, sino como una parábola viviente sobre la compasión."
+                    },
+                    {
+                        text: "La paradoja entre la aflicción por una planta efímera y la piedad por almas humanas.",
+                        isCorrect: true,
+                        rationale: "Dios confronta a Jonás: si él sintió lástima por una planta por la que no trabajó, con cuánta más razón Dios tendría compasión por más de 120,000 personas."
+                    },
+                    {
+                        text: "La confirmación de que la naturaleza siempre destruye el trabajo del hombre.",
+                        isCorrect: false,
+                        rationale: "El gusano y el viento abrasador fueron instrumentos divinos para enseñar misericordia, no una lección sobre destrucción natural."
+                    },
+                    {
+                        text: "El anuncio de la brevedad del reinado de Jeroboam II en Israel.",
+                        isCorrect: false,
+                        rationale: "La experiencia con la planta estaba estrictamente conectada con el estado espiritual y la salvación de Nínive."
+                    }
+                ]
+            }
+        ];
+
+        // State variables
+        let filteredQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let userAnswers = []; // Store selected index for each question
+        let quizMode = 'study'; // 'study' or 'exam'
+
+        // DOM Elements
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultsScreen = document.getElementById('results-screen');
+        
+        const categorySelect = document.getElementById('category-select');
+        const modeSelect = document.getElementById('mode-select');
+        const startBtn = document.getElementById('start-btn');
+
+        const headerStats = document.getElementById('header-stats');
+        const headerProgress = document.getElementById('header-progress');
+        const headerScore = document.getElementById('header-score');
+
+        const questionTag = document.getElementById('question-tag');
+        const questionBadge = document.getElementById('question-badge');
+        const questionNumberText = document.getElementById('question-number-text');
+        const progressBarFill = document.getElementById('progress-bar-fill');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+
+        const hintBtn = document.getElementById('hint-btn');
+        const hintBox = document.getElementById('hint-box');
+        const hintText = document.getElementById('hint-text');
+
+        const rationaleContainer = document.getElementById('rationale-container');
+        const rationaleHeader = document.getElementById('rationale-header');
+        const rationaleIcon = document.getElementById('rationale-icon');
+        const rationaleTitle = document.getElementById('rationale-title');
+        const rationaleText = document.getElementById('rationale-text');
+
+        const nextBtn = document.getElementById('next-btn');
+        const nextBtnText = document.getElementById('next-btn-text');
+
+        const scorePercentage = document.getElementById('score-percentage');
+        const scoreCount = document.getElementById('score-count');
+        const scorePoints = document.getElementById('score-points');
+        const scoreFeedback = document.getElementById('score-feedback');
+        const reviewList = document.getElementById('review-list');
+
+        const restartBtn = document.getElementById('restart-btn');
+        const homeBtn = document.getElementById('home-btn');
+
+        // Event Listeners
+        startBtn.addEventListener('click', startQuiz);
+        nextBtn.addEventListener('click', handleNextQuestion);
+        hintBtn.addEventListener('click', toggleHint);
+        restartBtn.addEventListener('click', startQuiz);
+        homeBtn.addEventListener('click', showHomeScreen);
+
+        function startQuiz() {
+            const category = categorySelect.value;
+            quizMode = modeSelect.value;
+
+            // Filter questions
+            if (category === 'all') {
+                filteredQuestions = [...questionsData];
+            } else {
+                filteredQuestions = questionsData.filter(q => q.category === category);
+            }
+
+            // Shuffle option positions internally for variability while tracking original correct answer
+            filteredQuestions = filteredQuestions.map(q => {
+                const shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+                return { ...q, options: shuffledOptions };
+            });
+
+            currentQuestionIndex = 0;
+            score = 0;
+            userAnswers = new Array(filteredQuestions.length).fill(null);
+
+            // UI Adjustments
+            startScreen.classList.add('hidden');
+            resultsScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            headerStats.classList.remove('hidden');
+            headerStats.classList.add('flex');
+
+            updateHeaderStats();
+            renderQuestion();
+        }
+
+        function renderQuestion() {
+            const currentQ = filteredQuestions[currentQuestionIndex];
+
+            // Reset UI states
+            hintBox.classList.add('hidden');
+            rationaleContainer.classList.add('hidden');
+            nextBtn.classList.add('hidden');
+            nextBtn.classList.remove('flex');
+
+            // Set Header & Progress info
+            questionTag.textContent = currentQ.tag;
+            questionBadge.textContent = currentQ.badge;
+            questionNumberText.textContent = `Pregunta ${currentQuestionIndex + 1} de ${filteredQuestions.length}`;
+            
+            const progressPercent = ((currentQuestionIndex + 1) / filteredQuestions.length) * 100;
+            progressBarFill.style.width = `${progressPercent}%`;
+
+            // Set Question & Hint
+            questionText.textContent = currentQ.question;
+            hintText.textContent = currentQ.hint;
+
+            // Render Option Buttons
+            optionsContainer.innerHTML = '';
+            currentQ.options.forEach((opt, index) => {
+                const optBtn = document.createElement('button');
+                optBtn.className = `option-card w-full text-left p-4 sm:p-5 rounded-2xl border border-slate-700/80 bg-slate-900/60 hover:bg-slate-800/80 hover:border-brand-500/50 flex items-start gap-4 transition-all group`;
+                optBtn.onclick = () => selectOption(index);
+
+                const letterBadge = document.createElement('span');
+                letterBadge.className = `w-7 h-7 rounded-lg bg-slate-800 text-slate-300 font-bold text-xs flex items-center justify-center border border-slate-700 group-hover:border-brand-500 group-hover:text-brand-400 shrink-0 transition-colors`;
+                letterBadge.textContent = String.fromCharCode(65 + index); // A, B, C, D
+
+                const optionText = document.createElement('span');
+                optionText.className = `text-slate-200 text-sm sm:text-base font-medium leading-relaxed pt-0.5`;
+                optionText.textContent = opt.text;
+
+                optBtn.appendChild(letterBadge);
+                optBtn.appendChild(optionText);
+                optionsContainer.appendChild(optBtn);
+            });
+
+            updateHeaderStats();
+        }
+
+        function selectOption(selectedIndex) {
+            if (userAnswers[currentQuestionIndex] !== null) return; // Prevent re-selecting
+
+            const currentQ = filteredQuestions[currentQuestionIndex];
+            userAnswers[currentQuestionIndex] = selectedIndex;
+
+            const selectedOpt = currentQ.options[selectedIndex];
+            const isCorrect = selectedOpt.isCorrect;
+
+            if (isCorrect) {
+                score += 10;
+            }
+
+            const optionButtons = optionsContainer.children;
+
+            // Disable all option buttons
+            Array.from(optionButtons).forEach((btn, index) => {
+                btn.classList.add('disabled', 'cursor-not-allowed');
+                btn.onclick = null;
+
+                const optData = currentQ.options[index];
+
+                if (quizMode === 'study') {
+                    if (optData.isCorrect) {
+                        btn.className = 'option-card w-full text-left p-4 sm:p-5 rounded-2xl border-2 border-emerald-500 bg-emerald-500/10 flex items-start gap-4';
+                        btn.querySelector('span').className = 'w-7 h-7 rounded-lg bg-emerald-500 text-white font-bold text-xs flex items-center justify-center shrink-0';
+                    } else if (index === selectedIndex && !isCorrect) {
+                        btn.className = 'option-card w-full text-left p-4 sm:p-5 rounded-2xl border-2 border-rose-500 bg-rose-500/10 flex items-start gap-4';
+                        btn.querySelector('span').className = 'w-7 h-7 rounded-lg bg-rose-500 text-white font-bold text-xs flex items-center justify-center shrink-0';
+                    } else {
+                        btn.className = 'option-card w-full text-left p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/30 opacity-50 flex items-start gap-4';
+                    }
+                } else {
+                    // Exam mode: highlight chosen option neutrally
+                    if (index === selectedIndex) {
+                        btn.className = 'option-card w-full text-left p-4 sm:p-5 rounded-2xl border-2 border-brand-500 bg-brand-500/10 flex items-start gap-4';
+                        btn.querySelector('span').className = 'w-7 h-7 rounded-lg bg-brand-500 text-white font-bold text-xs flex items-center justify-center shrink-0';
+                    } else {
+                        btn.className = 'option-card w-full text-left p-4 sm:p-5 rounded-2xl border border-slate-800 bg-slate-900/30 opacity-50 flex items-start gap-4';
+                    }
+                }
+            });
+
+            // Show rationale in Study mode
+            if (quizMode === 'study') {
+                rationaleContainer.classList.remove('hidden');
+                if (isCorrect) {
+                    rationaleContainer.className = 'mt-6 p-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 animate-fade-in';
+                    rationaleHeader.className = 'flex items-center gap-2 mb-2 font-bold text-sm text-emerald-400';
+                    rationaleIcon.className = 'fa-solid fa-circle-check';
+                    rationaleTitle.textContent = '¡Correcto!';
+                } else {
+                    rationaleContainer.className = 'mt-6 p-5 rounded-2xl border border-rose-500/30 bg-rose-500/10 animate-fade-in';
+                    rationaleHeader.className = 'flex items-center gap-2 mb-2 font-bold text-sm text-rose-400';
+                    rationaleIcon.className = 'fa-solid fa-circle-xmark';
+                    rationaleTitle.textContent = 'Explicación Exegética';
+                }
+                rationaleText.textContent = selectedOpt.rationale;
+            }
+
+            // Reveal Next Button
+            nextBtn.classList.remove('hidden');
+            nextBtn.classList.add('flex');
+            
+            if (currentQuestionIndex === filteredQuestions.length - 1) {
+                nextBtnText.textContent = 'Ver Resultados';
+            } else {
+                nextBtnText.textContent = 'Siguiente Pregunta';
+            }
+
+            updateHeaderStats();
+        }
+
+        function handleNextQuestion() {
+            if (currentQuestionIndex < filteredQuestions.length - 1) {
+                currentQuestionIndex++;
+                renderQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function toggleHint() {
+            hintBox.classList.toggle('hidden');
+        }
+
+        function updateHeaderStats() {
+            headerProgress.textContent = `${currentQuestionIndex + 1}/${filteredQuestions.length}`;
+            headerScore.textContent = `${score} pts`;
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultsScreen.classList.remove('hidden');
+
+            const totalQuestions = filteredQuestions.length;
+            const correctCount = userAnswers.reduce((count, ansIndex, qIndex) => {
+                if (ansIndex !== null && filteredQuestions[qIndex].options[ansIndex].isCorrect) {
+                    return count + 1;
+                }
+                return count;
+            }, 0);
+
+            const percentage = Math.round((correctCount / totalQuestions) * 100);
+
+            scorePercentage.textContent = `${percentage}%`;
+            scoreCount.textContent = `${correctCount} / ${totalQuestions}`;
+            scorePoints.textContent = `${correctCount * 10} pts`;
+
+            // Custom Feedback Text
+            if (percentage >= 90) {
+                scoreFeedback.textContent = '¡Excelente dominio teológico! Has demostrado un conocimiento profundo de los textos de Joel y Jonás.';
+                if (typeof confetti === 'function') {
+                    confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+                }
+            } else if (percentage >= 70) {
+                scoreFeedback.textContent = '¡Buen trabajo! Tienes una comprensión sólida de la profecía y la gracia en estos libros.';
+            } else {
+                scoreFeedback.textContent = 'Sigue repasando las guías de estudio para afianzar los conceptos del Día de Jehová y la misión a Nínive.';
+            }
+
+            // Render Detailed Review List
+            reviewList.innerHTML = '';
+            filteredQuestions.forEach((q, index) => {
+                const userChoiceIndex = userAnswers[index];
+                const isUserCorrect = userChoiceIndex !== null && q.options[userChoiceIndex].isCorrect;
+                const correctOpt = q.options.find(o => o.isCorrect);
+
+                const reviewItem = document.createElement('div');
+                reviewItem.className = `p-4 rounded-xl border ${isUserCorrect ? 'border-emerald-500/30 bg-emerald-500/5' : 'border-rose-500/30 bg-rose-500/5'} transition-all`;
+
+                reviewItem.innerHTML = `
+                    <div class="flex items-start justify-between gap-3 mb-2">
+                        <span class="text-xs font-bold text-slate-400">P${index + 1}. ${q.badge}</span>
+                        <span class="px-2 py-0.5 rounded text-xs font-bold ${isUserCorrect ? 'bg-emerald-500/20 text-emerald-300' : 'bg-rose-500/20 text-rose-300'}">
+                            ${isUserCorrect ? 'Correcta' : 'Incorrecta'}
+                        </span>
+                    </div>
+                    <p class="text-xs sm:text-sm font-medium text-white mb-2">${q.question}</p>
+                    <p class="text-xs text-slate-300">
+                        <strong class="text-slate-400">Respuesta correcta:</strong> ${correctOpt.text}
+                    </p>
+                    ${!isUserCorrect && userChoiceIndex !== null ? `
+                        <p class="text-xs text-rose-300 mt-1">
+                            <strong class="text-slate-400">Tu selección:</strong> ${q.options[userChoiceIndex].text}
+                        </p>
+                    ` : ''}
+                `;
+                reviewList.appendChild(reviewItem);
+            });
+        }
+
+        function showHomeScreen() {
+            resultsScreen.classList.add('hidden');
+            quizScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+            headerStats.classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
