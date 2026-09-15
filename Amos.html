@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario Interactivo: Amós</title>
+    <!-- Se utiliza Tailwind CSS para hacer el diseño responsivo y moderno rápidamente -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background-color: #f0fdfa; /* Un color de fondo suave y agradable */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease;
+        }
+        .fade-in {
+            animation: fadeIn 0.4s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Estilos personalizados para las opciones de respuesta */
+        .option-btn {
+            transition: all 0.2s ease;
+        }
+        .option-btn:hover:not(:disabled) {
+            transform: scale(1.02);
+            background-color: #e0f2fe;
+            border-color: #38bdf8;
+        }
+        .correct {
+            background-color: #dcfce7 !important;
+            border-color: #22c55e !important;
+            color: #166534 !important;
+        }
+        .incorrect {
+            background-color: #fee2e2 !important;
+            border-color: #ef4444 !important;
+            color: #991b1b !important;
+        }
+        .disabled-btn {
+            opacity: 0.8;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <!-- Contenedor Principal -->
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden relative border border-gray-100">
+        
+        <!-- PANTALLA DE INICIO (PORTADA) -->
+        <div id="start-screen" class="p-8 md:p-12 text-center fade-in block">
+            <div class="mb-6 flex justify-center">
+                <div class="w-24 h-24 bg-teal-100 text-teal-600 rounded-full flex items-center justify-center text-4xl shadow-sm">
+                    📜
+                </div>
+            </div>
+            <h1 class="text-3xl md:text-4xl font-extrabold text-gray-800 mb-4">Cuestionario sobre Amós</h1>
+            <p class="text-gray-600 mb-8 text-lg">
+                Pon a prueba tus conocimientos sobre el ministerio, las visiones y el contexto del profeta Amós basado en el documento de estudio. Consta de 7 preguntas.
+            </p>
+            <button onclick="startQuiz()" class="w-full sm:w-auto px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg transition-transform hover:-translate-y-1 text-lg">
+                Comenzar Cuestionario
+            </button>
+        </div>
+
+        <!-- PANTALLA DEL CUESTIONARIO -->
+        <div id="quiz-screen" class="p-6 md:p-10 fade-in hidden">
+            <div class="flex justify-between items-center mb-6">
+                <span class="text-sm font-semibold text-teal-600 uppercase tracking-wider" id="question-tracker">Pregunta 1 de 7</span>
+                <span class="text-sm font-medium text-gray-500 bg-gray-100 px-3 py-1 rounded-full" id="score-tracker">Puntos: 0</span>
+            </div>
+            
+            <div class="w-full bg-gray-200 rounded-full h-2 mb-8">
+                <div id="progress-bar" class="bg-teal-500 h-2 rounded-full transition-all duration-300" style="width: 14%"></div>
+            </div>
+
+            <h2 id="question-text" class="text-2xl md:text-3xl font-bold text-gray-800 mb-8 leading-tight">
+                ¿Pregunta de ejemplo?
+            </h2>
+
+            <div id="options-container" class="flex flex-col space-y-4 mb-8">
+                <!-- Las opciones se inyectarán aquí mediante JavaScript -->
+            </div>
+
+            <!-- Contenedor de feedback y botón siguiente -->
+            <div id="feedback-container" class="hidden flex flex-col sm:flex-row items-center justify-between mt-6 pt-6 border-t border-gray-100">
+                <p id="feedback-message" class="text-lg font-bold mb-4 sm:mb-0"></p>
+                <button id="next-btn" onclick="nextQuestion()" class="w-full sm:w-auto px-8 py-3 bg-gray-800 hover:bg-gray-900 text-white font-bold rounded-xl shadow-md transition-all">
+                    Siguiente Pregunta ➔
+                </button>
+            </div>
+        </div>
+
+        <!-- PANTALLA DE RESULTADOS -->
+        <div id="result-screen" class="p-8 md:p-12 text-center fade-in hidden">
+            <h2 class="text-4xl font-extrabold text-gray-800 mb-2">¡Cuestionario Completado!</h2>
+            <p class="text-gray-500 mb-8 text-lg">Aquí están tus resultados finales.</p>
+            
+            <div class="inline-block p-8 bg-gray-50 rounded-2xl border-2 border-gray-100 mb-8 w-full max-w-sm">
+                <div id="final-score" class="text-6xl font-black text-teal-600 mb-2">7/7</div>
+                <p id="final-message" class="text-gray-600 font-medium text-lg">¡Calificación perfecta!</p>
+            </div>
+
+            <div>
+                <button onclick="restartQuiz()" class="w-full sm:w-auto px-8 py-4 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg transition-transform hover:-translate-y-1 text-lg">
+                    Volver a intentarlo
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Datos de las preguntas extraídas del documento "Amós 9 cp.pdf"
+        const quizData = [
+            {
+                question: "¿Cuál era la ocupación de Amós antes de ser llamado como profeta?",
+                options: [
+                    "Sacerdote en el templo de Bet-el.",
+                    "Pastor de ovejas y cultivador de sicómoros.",
+                    "Estudiante en las escuelas de los profetas."
+                ],
+                correctAnswer: 1 // Índice del arreglo (0, 1 o 2)
+            },
+            {
+                question: "¿A qué reino fue enviado Amós principalmente para predicar su mensaje de juicio?",
+                options: [
+                    "Al reino del sur, Judá.",
+                    "A las naciones vecinas de Edom y Moab.",
+                    "Al reino del norte, Israel."
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "Según el texto, ¿cuál es la frase clave que resume el mensaje principal de Amós?",
+                options: [
+                    "Prepárate para el encuentro con tu Dios.",
+                    "El justo por la fe vivirá.",
+                    "Arrepentíos y bautícese cada uno."
+                ],
+                correctAnswer: 0
+            },
+            {
+                question: "En la época del ministerio de Amós, ¿cuál era la situación económica y moral del reino del norte?",
+                options: [
+                    "Sufrían de extrema pobreza y constantes invasiones extranjeras.",
+                    "Eran ricos y prósperos materialmente, pero corruptos moralmente e idólatras.",
+                    "Estaban en proceso de avivamiento espiritual y construyendo un nuevo templo."
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Quién fue el sacerdote de la falsa religión en Bet-el que confrontó a Amós?",
+                options: [
+                    "Jeroboam II",
+                    "Uzías",
+                    "Amasías"
+                ],
+                correctAnswer: 2
+            },
+            {
+                question: "En la serie de cinco visiones de Amós, ¿qué revelaba la visión de la 'plomada de albañil'?",
+                options: [
+                    "La rápida llegada de una plaga de langostas sobre la tierra.",
+                    "Cuán alejada estaba Israel de las normas de Dios.",
+                    "La promesa de que Dios reconstruiría inmediatamente los muros de Jerusalén."
+                ],
+                correctAnswer: 1
+            },
+            {
+                question: "¿Con qué mensaje concluye la última sección (cuarta división) del libro de Amós?",
+                options: [
+                    "Con una promesa de restauración de la dinastía davídica y futura prosperidad.",
+                    "Con la destrucción definitiva y permanente de todas las tribus de Israel.",
+                    "Con la orden de construir un altar de oro en la ciudad de Jerusalén."
+                ],
+                correctAnswer: 0
+            }
+        ];
+
+        // Variables de estado
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let hasAnswered = false;
+
+        // Referencias del DOM
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const questionTracker = document.getElementById('question-tracker');
+        const scoreTracker = document.getElementById('score-tracker');
+        const progressBar = document.getElementById('progress-bar');
+        
+        const feedbackContainer = document.getElementById('feedback-container');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const nextBtn = document.getElementById('next-btn');
+
+        // Función para iniciar el cuestionario
+        function startQuiz() {
+            startScreen.classList.remove('block');
+            startScreen.classList.add('hidden');
+            
+            quizScreen.classList.remove('hidden');
+            quizScreen.classList.add('block');
+            
+            currentQuestionIndex = 0;
+            score = 0;
+            updateUI();
+            loadQuestion();
+        }
+
+        // Función para cargar la pregunta actual en la pantalla
+        function loadQuestion() {
+            hasAnswered = false;
+            feedbackContainer.classList.add('hidden');
+            optionsContainer.innerHTML = ''; // Limpiar opciones anteriores
+            
+            const currentQ = quizData[currentQuestionIndex];
+            questionText.innerText = currentQ.question;
+            
+            // Actualizar trackers
+            questionTracker.innerText = `Pregunta ${currentQuestionIndex + 1} de ${quizData.length}`;
+            progressBar.style.width = `${((currentQuestionIndex + 1) / quizData.length) * 100}%`;
+
+            // Crear botones de opciones dinámicamente
+            currentQ.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn w-full text-left p-4 md:p-5 text-gray-700 bg-white border-2 border-gray-200 rounded-xl font-medium text-lg focus:outline-none';
+                btn.innerText = option;
+                
+                // Evento al hacer clic en una opción
+                btn.onclick = () => selectOption(btn, index);
+                
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        // Función que procesa la selección de una respuesta
+        function selectOption(selectedBtn, selectedIndex) {
+            if (hasAnswered) return; // Evitar que responda más de una vez
+            hasAnswered = true;
+            
+            const currentQ = quizData[currentQuestionIndex];
+            const isCorrect = (selectedIndex === currentQ.correctAnswer);
+            
+            // Deshabilitar todos los botones
+            const allBtns = optionsContainer.querySelectorAll('button');
+            allBtns.forEach((btn, idx) => {
+                btn.classList.add('disabled-btn');
+                btn.disabled = true;
+                
+                // Mostrar siempre cuál era la correcta
+                if (idx === currentQ.correctAnswer) {
+                    btn.classList.add('correct');
+                    btn.classList.remove('border-gray-200');
+                }
+            });
+
+            // Si se equivocó, marcar su opción como incorrecta
+            if (!isCorrect) {
+                selectedBtn.classList.add('incorrect');
+                selectedBtn.classList.remove('border-gray-200');
+                feedbackMessage.innerText = "❌ Respuesta Incorrecta";
+                feedbackMessage.className = "text-xl font-bold mb-4 sm:mb-0 text-red-600";
+            } else {
+                score++;
+                updateUI();
+                feedbackMessage.innerText = "✅ ¡Correcto!";
+                feedbackMessage.className = "text-xl font-bold mb-4 sm:mb-0 text-green-600";
+            }
+
+            // Cambiar texto del botón siguiente si es la última pregunta
+            if (currentQuestionIndex === quizData.length - 1) {
+                nextBtn.innerText = "Ver Calificación Final ➔";
+            } else {
+                nextBtn.innerText = "Siguiente Pregunta ➔";
+            }
+
+            // Mostrar área de siguiente y feedback
+            feedbackContainer.classList.remove('hidden');
+        }
+
+        // Función para avanzar a la siguiente pregunta
+        function nextQuestion() {
+            if (currentQuestionIndex < quizData.length - 1) {
+                currentQuestionIndex++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        // Función para actualizar puntuación en pantalla
+        function updateUI() {
+            scoreTracker.innerText = `Nota Parcial: ${score}`;
+        }
+
+        // Función para mostrar la calificación final
+        function showResults() {
+            quizScreen.classList.remove('block');
+            quizScreen.classList.add('hidden');
+            
+            resultScreen.classList.remove('hidden');
+            resultScreen.classList.add('block');
+
+            const finalScoreEl = document.getElementById('final-score');
+            const finalMessageEl = document.getElementById('final-message');
+            
+            finalScoreEl.innerText = `${score} / ${quizData.length}`;
+
+            // Mensajes según la nota
+            if (score === quizData.length) {
+                finalMessageEl.innerText = "¡Excelente! Comprendes perfectamente el contexto de Amós. Nota Máxima.";
+                finalScoreEl.className = "text-6xl font-black text-green-600 mb-2";
+            } else if (score >= 4) {
+                finalMessageEl.innerText = "¡Buen trabajo! Tienes un buen entendimiento del texto.";
+                finalScoreEl.className = "text-6xl font-black text-teal-600 mb-2";
+            } else {
+                finalMessageEl.innerText = "No te rindas. Te sugerimos repasar el documento e intentarlo de nuevo.";
+                finalScoreEl.className = "text-6xl font-black text-yellow-600 mb-2";
+            }
+        }
+
+        // Función para reiniciar
+        function restartQuiz() {
+            resultScreen.classList.remove('block');
+            resultScreen.classList.add('hidden');
+            startQuiz();
+        }
+    </script>
+</body>
+</html>
