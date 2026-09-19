@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuestionario Interactivo: El Libro de Oseas</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: #94a3b8;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between antialiased selection:bg-indigo-500 selection:text-white">
+
+  <!-- TOP HEADER NAV -->
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-sm">
+    <div class="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-2">
+        <div class="w-9 h-9 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-bold text-lg shadow-md shadow-indigo-200">
+          📖
+        </div>
+        <div>
+          <h1 class="font-bold text-slate-800 text-base leading-tight">Cuestionario Teológico</h1>
+          <p class="text-xs text-slate-500">Estudio sobre el libro de Oseas</p>
+        </div>
+      </div>
+      <button id="btn-toggle-code" onclick="toggleCodeModal()" class="flex items-center gap-1.5 text-xs font-semibold text-indigo-600 bg-indigo-50 hover:bg-indigo-100 px-3 py-2 rounded-lg transition-all border border-indigo-200">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+        </svg>
+        <span>Ver Código HTML</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN CONTAINER -->
+  <main class="max-w-3xl w-full mx-auto px-4 py-6 flex-grow flex items-center justify-center">
+
+    <!-- 1. PANTALLA DE PORTADA -->
+    <div id="screen-welcome" class="w-full bg-white rounded-2xl shadow-xl border border-slate-200/80 overflow-hidden transition-all duration-300">
+      <div class="bg-gradient-to-r from-indigo-700 via-indigo-600 to-violet-700 p-8 text-white relative overflow-hidden">
+        <div class="absolute -right-10 -bottom-10 w-40 h-40 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-semibold tracking-wide uppercase mb-3">
+          Cuestionario Interactivo
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight mb-2">
+          El Libro de Oseas
+        </h2>
+        <p class="text-indigo-100 text-sm sm:text-base max-w-xl">
+          Paternidad, contexto histórico, lecciones proféticas y el mensaje incondicional del amor de Dios hacia Israel.
+        </p>
+      </div>
+
+      <div class="p-6 sm:p-8 space-y-6">
+        <div class="grid grid-cols-3 gap-3 text-center">
+          <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
+            <span class="block text-xl font-bold text-indigo-600">7</span>
+            <span class="text-xs text-slate-500 font-medium">Preguntas</span>
+          </div>
+          <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
+            <span class="block text-xl font-bold text-indigo-600">3</span>
+            <span class="text-xs text-slate-500 font-medium">Opciones c/u</span>
+          </div>
+          <div class="p-3 bg-slate-50 border border-slate-100 rounded-xl">
+            <span class="block text-xl font-bold text-indigo-600">7.0</span>
+            <span class="text-xs text-slate-500 font-medium">Nota Máxima</span>
+          </div>
+        </div>
+
+        <div class="bg-amber-50 border-l-4 border-amber-400 p-4 rounded-r-xl">
+          <div class="flex gap-3">
+            <span class="text-amber-500 font-bold text-lg">💡</span>
+            <p class="text-xs sm:text-sm text-amber-800 leading-relaxed">
+              Responde las preguntas de una en una. Recibirás retroalimentación inmediata con la explicación detallada de cada respuesta. ¡Éxito!
+            </p>
+          </div>
+        </div>
+
+        <button onclick="startQuiz()" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold text-lg rounded-xl shadow-lg shadow-indigo-200 transition-all flex items-center justify-center gap-2">
+          <span>Comenzar Evaluación</span>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 2. PANTALLA DE PREGUNTAS -->
+    <div id="screen-quiz" class="hidden w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden transition-all duration-300">
+      
+      <!-- BARRA DE PROGRESO -->
+      <div class="bg-slate-50 border-b border-slate-200 p-4 sm:px-6 flex items-center justify-between gap-4">
+        <div class="flex-grow">
+          <div class="flex justify-between items-center mb-1.5">
+            <span id="quiz-progress-text" class="text-xs font-bold text-indigo-600 uppercase tracking-wider">Pregunta 1 de 7</span>
+            <span id="quiz-progress-percent" class="text-xs font-semibold text-slate-400">14%</span>
+          </div>
+          <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+            <div id="quiz-progress-bar" class="bg-indigo-600 h-full rounded-full transition-all duration-300" style="width: 14%;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CONTENIDO DE LA PREGUNTA -->
+      <div class="p-6 sm:p-8 space-y-6">
+        <h3 id="question-text" class="text-lg sm:text-xl font-bold text-slate-800 leading-snug">
+          <!-- Texto de la pregunta -->
+        </h3>
+
+        <!-- OPCIONES -->
+        <div id="options-container" class="space-y-3">
+          <!-- Opciones dinámicas -->
+        </div>
+
+        <!-- RETROALIMENTACIÓN -->
+        <div id="feedback-box" class="hidden p-4 rounded-xl border text-sm transition-all animate-fadeIn">
+          <div class="flex gap-3">
+            <span id="feedback-icon" class="text-xl"></span>
+            <div>
+              <h4 id="feedback-title" class="font-bold mb-1"></h4>
+              <p id="feedback-text" class="text-slate-600 leading-relaxed text-xs sm:text-sm"></p>
+            </div>
+          </div>
+        </div>
+
+        <!-- BOTÓN NAVEGACIÓN -->
+        <div class="pt-2 flex justify-end">
+          <button id="btn-next" onclick="nextQuestion()" disabled class="px-6 py-3 bg-indigo-600 text-white font-bold text-sm rounded-xl shadow-md disabled:opacity-40 disabled:cursor-not-allowed hover:bg-indigo-700 active:scale-95 transition-all flex items-center gap-2">
+            <span id="btn-next-text">Siguiente</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. PANTALLA DE RESULTADOS -->
+    <div id="screen-results" class="hidden w-full bg-white rounded-2xl shadow-xl border border-slate-200 overflow-hidden transition-all duration-300">
+      <div class="p-8 text-center bg-gradient-to-b from-indigo-50 to-white border-b border-slate-100">
+        <div id="score-badge" class="w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl shadow-lg">
+          🏆
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-extrabold text-slate-800 mb-1">Evaluación Finalizada</h2>
+        <p class="text-slate-500 text-sm">Este es el resumen de tu rendimiento en el test de Oseas</p>
+
+        <div class="mt-6 inline-flex flex-col items-center justify-center p-6 bg-white rounded-2xl border border-slate-200 shadow-sm">
+          <span class="text-xs uppercase font-bold text-slate-400 tracking-wider mb-1">Calificación Obtenida</span>
+          <div class="flex items-baseline gap-1">
+            <span id="final-score" class="text-5xl font-black text-indigo-600">7.0</span>
+            <span class="text-slate-400 font-bold text-xl">/ 7.0</span>
+          </div>
+          <p id="score-message" class="mt-2 text-xs font-semibold px-3 py-1 rounded-full bg-slate-100 text-slate-600">
+            <!-- Mensaje según la nota -->
+          </p>
+        </div>
+      </div>
+
+      <!-- REVISIÓN DETALLADA -->
+      <div class="p-6 sm:p-8 space-y-4">
+        <h3 class="font-bold text-slate-800 text-base">Revisión de respuestas</h3>
+        <div id="review-container" class="space-y-3 max-h-72 overflow-y-auto pr-1 custom-scrollbar">
+          <!-- Lista de revisión -->
+        </div>
+
+        <button onclick="restartQuiz()" class="w-full mt-4 py-3.5 bg-indigo-600 hover:bg-indigo-700 active:scale-[0.99] text-white font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+          <span>Intentar Nuevamente</span>
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- MODAL DE VISUALIZACIÓN DE CÓDIGO HTML -->
+  <div id="code-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 text-slate-100 w-full max-w-4xl h-[85vh] rounded-2xl shadow-2xl flex flex-col border border-slate-800 overflow-hidden">
+      <!-- MODAL HEADER -->
+      <div class="px-6 py-4 bg-slate-800/80 border-b border-slate-700 flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <div class="flex gap-1.5">
+            <span class="w-3 h-3 rounded-full bg-red-500 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-yellow-500 inline-block"></span>
+            <span class="w-3 h-3 rounded-full bg-green-500 inline-block"></span>
+          </div>
+          <span class="text-xs font-mono text-slate-400 ml-2">index.html</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button onclick="copyCode()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-lg transition-all flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+            </svg>
+            <span id="copy-btn-text">Copiar Código</span>
+          </button>
+          <button onclick="toggleCodeModal()" class="text-slate-400 hover:text-white p-1 rounded-lg">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      </div>
+      <!-- MODAL BODY CODE VIEWER -->
+      <div class="flex-grow p-4 overflow-auto custom-scrollbar bg-slate-950 font-mono text-xs sm:text-sm text-slate-300">
+        <pre><code id="code-content"></code></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="bg-white border-t border-slate-200 py-3 text-center text-xs text-slate-400">
+    <p>Cuestionario Interactivo Educativo &bull; Basado en la Introducción al Libro de Oseas</p>
+  </footer>
+
+  <!-- SCRIPT DE LA APLICACIÓN -->
+  <script>
+    // BANK OF 7 QUESTIONS BASED ON THE HOSEA PDF DOCUMENT
+    const quizData = [
+      {
+        question: "1. ¿En qué contexto geográfico y época ejerció su ministerio principalmente el profeta Oseas?",
+        options: [
+          "En el Reino del Sur (Judá), durante el exilio en Babilonia.",
+          "En el Reino del Norte (Israel/Efraín), alrededor del 750 a.C. bajo Jeroboam II.",
+          "En la ciudad de Jerusalén, inmediatamente después de la reconstrucción del templo."
+        ],
+        correct: 1,
+        explanation: "Oseas fue la última voz de Dios enviada al reino del norte (Israel/Efraín/Samaria) hacia el 750 a.C., durante los reinados de Uzías, Jotam, Acaz y Ezequías en el sur, y Jeroboam II en el norte."
+      },
+      {
+        question: "2. ¿Cuál es el tema central o la palabra clave que define el mensaje del libro de Oseas?",
+        options: [
+          "La estricta aplicación de sacrificios rituales en el templo.",
+          "El inmutable y fiel amor de Dios hacia una nación infiel.",
+          "Las estrategias militares para defenderse de la amenaza asiria."
+        ],
+        correct: 1,
+        explanation: "El dato clave del libro de Oseas es el amor inmutable de Dios hacia su pueblo Israel, a pesar de que la nación le había sido totalmente infiel."
+      },
+      {
+        question: "3. ¿Qué simbolizaba la relación matrimonial de Oseas con su esposa Gomer?",
+        options: [
+          "Una lección práctica ilustrativa de la relación de Dios con Israel.",
+          "Un modelo legal sobre los contratos matrimoniales de la época.",
+          "Una alianza política entre familias prominentes del reino del norte."
+        ],
+        correct: 0,
+        explanation: "Dios utilizó la vida familiar de Oseas como lección práctica: la fidelidad de Oseas hacia su mujer infiel ilustraba el amor inalterable de Dios hacia un Israel espiritualmente adúltero."
+      },
+      {
+        question: "4. ¿Qué significaba el nombre profético 'Lo-ammi' dado al tercer hijo mencionado en la profecía?",
+        options: [
+          "Juicio sobre las naciones enemigas.",
+          "No compadecida.",
+          "No mi pueblo."
+        ],
+        correct: 2,
+        explanation: "El tercer hijo recibió el nombre 'Lo-ammi', que significa 'no mi pueblo', indicando simbólicamente que Dios se estaba alejando de la nación rebelde."
+      },
+      {
+        question: "5. Además de 'Israel', ¿qué otros dos nombres utiliza Oseas comúnmente para denominar al reino del norte?",
+        options: [
+          "Efraín y Samaria.",
+          "Sión y Jerusalén.",
+          "Galaad y Gilgal."
+        ],
+        correct: 0,
+        explanation: "Oseas llama al reino del norte Israel, Samaria (por ser la capital) y Efraín (por ser la tribu más poderosa e influyente del reino del norte)."
+      },
+      {
+        question: "6. Según el texto, ¿con qué otros profetas ejerció Oseas su ministerio de manera contemporánea?",
+        options: [
+          "Jeremías y Ezequiel.",
+          "Amós en el norte, e Isaías y Miqueas en el sur.",
+          "Hageo, Zacarías y Malaquías."
+        ],
+        correct: 1,
+        explanation: "Durante un breve período, Oseas ejerció su ministerio simultáneamente con Amós en el reino del norte, e Isaías y Miqueas en el reino del sur."
+      },
+      {
+        question: "7. Cuando Gomer abandonó a Oseas y terminó siendo subastada como esclava, ¿qué le ordenó Dios hacer al profeta?",
+        options: [
+          "Que la repudiara formalmente y tomara una nueva esposa.",
+          "Que fuera, la comprara y la restaurara como su esposa.",
+          "Que la entregara a los sacerdotes de Samaria para juicio."
+        ],
+        correct: 1,
+        explanation: "Dios le mandó a Oseas que fuera y comprara a su mujer descarriada para restaurarla como su esposa, demostrando cuán profundo e inagotable es el perdón y el amor de Dios."
+      }
+    ];
+
+    let currentQuestionIndex = 0;
+    let selectedOptionIndex = null;
+    let userAnswers = new Array(quizData.length).fill(null);
+
+    // ELEMENTOS DOM
+    const screenWelcome = document.getElementById('screen-welcome');
+    const screenQuiz = document.getElementById('screen-quiz');
+    const screenResults = document.getElementById('screen-results');
+
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const feedbackBox = document.getElementById('feedback-box');
+    const feedbackIcon = document.getElementById('feedback-icon');
+    const feedbackTitle = document.getElementById('feedback-title');
+    const feedbackText = document.getElementById('feedback-text');
+    const btnNext = document.getElementById('btn-next');
+    const btnNextText = document.getElementById('btn-next-text');
+
+    const progressText = document.getElementById('quiz-progress-text');
+    const progressPercent = document.getElementById('quiz-progress-percent');
+    const progressBar = document.getElementById('quiz-progress-bar');
+
+    // INICIAR CUESTIONARIO
+    function startQuiz() {
+      currentQuestionIndex = 0;
+      userAnswers = new Array(quizData.length).fill(null);
+      screenWelcome.classList.add('hidden');
+      screenResults.classList.add('hidden');
+      screenQuiz.classList.remove('hidden');
+      loadQuestion();
+    }
+
+    // CARGAR PREGUNTA
+    function loadQuestion() {
+      const currentData = quizData[currentQuestionIndex];
+      selectedOptionIndex = null;
+
+      // Actualizar progreso
+      const currentNumber = currentQuestionIndex + 1;
+      const totalQuestions = quizData.length;
+      const percent = Math.round((currentNumber / totalQuestions) * 100);
+
+      progressText.textContent = `Pregunta ${currentNumber} de ${totalQuestions}`;
+      progressPercent.textContent = `${percent}%`;
+      progressBar.style.width = `${percent}%`;
+
+      // Texto pregunta
+      questionText.textContent = currentData.question;
+
+      // Limpiar opciones y feedback
+      optionsContainer.innerHTML = '';
+      feedbackBox.classList.add('hidden');
+      btnNext.disabled = true;
+
+      if (currentQuestionIndex === totalQuestions - 1) {
+        btnNextText.textContent = "Ver Resultados";
+      } else {
+        btnNextText.textContent = "Siguiente";
+      }
+
+      // Renderizar 3 alternativas
+      currentData.options.forEach((opt, index) => {
+        const optionBtn = document.createElement('button');
+        optionBtn.className = `w-full text-left p-4 rounded-xl border-2 transition-all flex items-start gap-3 bg-white border-slate-200 hover:border-indigo-300 hover:bg-slate-50 cursor-pointer focus:outline-none`;
+        optionBtn.onclick = () => selectOption(index);
+
+        const letter = String.fromCharCode(65 + index); // A, B, C
+
+        optionBtn.innerHTML = `
+          <span class="opt-letter w-7 h-7 rounded-lg bg-slate-100 text-slate-600 font-bold text-xs flex items-center justify-center shrink-0 border border-slate-200 transition-colors">
+            ${letter}
+          </span>
+          <span class="text-xs sm:text-sm text-slate-700 font-medium pt-0.5 leading-relaxed">
+            ${opt}
+          </span>
+        `;
+        optionsContainer.appendChild(optionBtn);
+      });
+    }
+
+    // SELECCIONAR RESPUESTA
+    function selectOption(index) {
+      if (selectedOptionIndex !== null) return; // Evita cambiar después de responder
+
+      selectedOptionIndex = index;
+      userAnswers[currentQuestionIndex] = index;
+
+      const currentData = quizData[currentQuestionIndex];
+      const isCorrect = index === currentData.correct;
+      const optionButtons = optionsContainer.children;
+
+      // Estilar botones
+      Array.from(optionButtons).forEach((btn, idx) => {
+        btn.disabled = true;
+        btn.classList.remove('hover:border-indigo-300', 'hover:bg-slate-50');
+
+        const letterSpan = btn.querySelector('.opt-letter');
+
+        if (idx === currentData.correct) {
+          // Opción Correcta
+          btn.classList.remove('border-slate-200');
+          btn.classList.add('border-emerald-500', 'bg-emerald-50/60');
+          letterSpan.classList.remove('bg-slate-100', 'text-slate-600');
+          letterSpan.classList.add('bg-emerald-500', 'text-white', 'border-emerald-500');
+        } else if (idx === index && !isCorrect) {
+          // Opción Incorrecta seleccionada
+          btn.classList.remove('border-slate-200');
+          btn.classList.add('border-rose-500', 'bg-rose-50/60');
+          letterSpan.classList.remove('bg-slate-100', 'text-slate-600');
+          letterSpan.classList.add('bg-rose-500', 'text-white', 'border-rose-500');
+        } else {
+          btn.classList.add('opacity-50');
+        }
+      });
+
+      // Mostrar Feedback
+      feedbackBox.classList.remove('hidden', 'bg-emerald-50', 'border-emerald-200', 'text-emerald-900', 'bg-rose-50', 'border-rose-200', 'text-rose-900');
+
+      if (isCorrect) {
+        feedbackBox.classList.add('bg-emerald-50', 'border-emerald-200');
+        feedbackIcon.textContent = "✅";
+        feedbackTitle.textContent = "¡Respuesta Correcta!";
+        feedbackTitle.className = "font-bold mb-1 text-emerald-800";
+      } else {
+        feedbackBox.classList.add('bg-rose-50', 'border-rose-200');
+        feedbackIcon.textContent = "❌";
+        feedbackTitle.textContent = "Respuesta Incorrecta";
+        feedbackTitle.className = "font-bold mb-1 text-rose-800";
+      }
+
+      feedbackText.textContent = currentData.explanation;
+      btnNext.disabled = false;
+    }
+
+    // PASAR A LA SIGUIENTE PREGUNTA
+    function nextQuestion() {
+      if (currentQuestionIndex < quizData.length - 1) {
+        currentQuestionIndex++;
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    // MOSTRAR RESULTADOS FINALES
+    function showResults() {
+      screenQuiz.classList.add('hidden');
+      screenResults.classList.remove('hidden');
+
+      // Calcular puntaje
+      let score = 0;
+      quizData.forEach((item, idx) => {
+        if (userAnswers[idx] === item.correct) {
+          score++;
+        }
+      });
+
+      const finalScoreEl = document.getElementById('final-score');
+      const scoreMessage = document.getElementById('score-message');
+      const scoreBadge = document.getElementById('score-badge');
+      const reviewContainer = document.getElementById('review-container');
+
+      finalScoreEl.textContent = `${score}.0`;
+
+      // Mensajes y estilos por nota (Escala 1 a 7)
+      if (score === 7) {
+        scoreMessage.textContent = "¡Excelente! Dominio total del tema";
+        scoreMessage.className = "mt-2 text-xs font-semibold px-3 py-1 rounded-full bg-emerald-100 text-emerald-700";
+        scoreBadge.textContent = "🥇";
+        scoreBadge.className = "w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl shadow-lg bg-emerald-100 text-emerald-600";
+      } else if (score >= 5) {
+        scoreMessage.textContent = "¡Buen trabajo! Buen conocimiento general";
+        scoreMessage.className = "mt-2 text-xs font-semibold px-3 py-1 rounded-full bg-indigo-100 text-indigo-700";
+        scoreBadge.textContent = "🥈";
+        scoreBadge.className = "w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl shadow-lg bg-indigo-100 text-indigo-600";
+      } else if (score >= 4) {
+        scoreMessage.textContent = "Aprobado. Hay margen de mejora";
+        scoreMessage.className = "mt-2 text-xs font-semibold px-3 py-1 rounded-full bg-amber-100 text-amber-700";
+        scoreBadge.textContent = "🥉";
+        scoreBadge.className = "w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl shadow-lg bg-amber-100 text-amber-600";
+      } else {
+        scoreMessage.textContent = "Requiere repasar el contenido";
+        scoreMessage.className = "mt-2 text-xs font-semibold px-3 py-1 rounded-full bg-rose-100 text-rose-700";
+        scoreBadge.textContent = "📚";
+        scoreBadge.className = "w-20 h-20 mx-auto mb-4 rounded-full flex items-center justify-center text-3xl shadow-lg bg-rose-100 text-rose-600";
+      }
+
+      // Renderizar resumen
+      reviewContainer.innerHTML = '';
+      quizData.forEach((item, idx) => {
+        const isCorrect = userAnswers[idx] === item.correct;
+        const reviewItem = document.createElement('div');
+        reviewItem.className = `p-3 rounded-xl border text-xs sm:text-sm flex items-start gap-3 ${isCorrect ? 'bg-emerald-50/50 border-emerald-200' : 'bg-rose-50/50 border-rose-200'}`;
+
+        reviewItem.innerHTML = `
+          <span class="text-base leading-none">${isCorrect ? '✅' : '❌'}</span>
+          <div>
+            <p class="font-bold text-slate-800 mb-0.5">P${idx + 1}: ${item.question}</p>
+            <p class="text-slate-600 text-xs">
+              <span class="font-semibold">Tu respuesta:</span> ${userAnswers[idx] !== null ? item.options[userAnswers[idx]] : 'Sin responder'}
+            </p>
+            ${!isCorrect ? `<p class="text-emerald-700 text-xs mt-0.5 font-medium"><span class="font-semibold">Correcta:</span> ${item.options[item.correct]}</p>` : ''}
+          </div>
+        `;
+        reviewContainer.appendChild(reviewItem);
+      });
+    }
+
+    // REINICIAR CUESTIONARIO
+    function restartQuiz() {
+      screenResults.classList.add('hidden');
+      screenWelcome.classList.remove('hidden');
+    }
+
+    // MODAL CÓDIGO HTML
+    function toggleCodeModal() {
+      const modal = document.getElementById('code-modal');
+      const codeContent = document.getElementById('code-content');
+
+      if (modal.classList.contains('hidden')) {
+        // Cargar el HTML completo del documento en la ventana
+        codeContent.textContent = "<!DOCTYPE html>\n" + document.documentElement.outerHTML;
+        modal.classList.remove('hidden');
+      } else {
+        modal.classList.add('hidden');
+      }
+    }
+
+    // COPIAR CÓDIGO
+    function copyCode() {
+      const codeText = document.getElementById('code-content').textContent;
+      navigator.clipboard.writeText(codeText).then(() => {
+        const copyBtnText = document.getElementById('copy-btn-text');
+        copyBtnText.textContent = "¡Copiado!";
+        setTimeout(() => {
+          copyBtnText.textContent = "Copiar Código";
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
