@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario Interactivo: El Libro de Isaías</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        .custom-shadow {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-slate-900 to-indigo-950 text-slate-100 min-h-screen flex flex-col justify-between font-sans selection:bg-amber-500 selection:text-slate-950">
+
+    <!-- Header -->
+    <header class="w-full py-6 px-6 border-b border-slate-800/80 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-500/10 border border-amber-500/30 p-2.5 rounded-xl text-amber-400">
+                    <i class="fa-solid fa-scroll text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-serif text-xl md:text-2xl font-bold tracking-wide text-amber-100">Estudio de Isaías</h1>
+                    <p class="text-xs text-slate-400">Evaluación Teológica e Histórica</p>
+                </div>
+            </div>
+            <div id="score-counter" class="hidden items-center space-x-2 bg-slate-800/80 border border-slate-700 px-4 py-2 rounded-full text-sm">
+                <i class="fa-solid fa-star text-amber-400"></i>
+                <span class="text-slate-300">Puntaje: <strong id="current-score" class="text-amber-400 font-semibold">0</strong> / <span id="total-questions-count">10</span></span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-3xl w-full mx-auto px-4 py-8 md:py-12 flex-grow flex flex-col justify-center">
+
+        <!-- Welcome View -->
+        <div id="welcome-view" class="bg-slate-900/90 border border-slate-800 rounded-3xl p-8 md:p-12 custom-shadow text-center relative overflow-hidden">
+            <div class="absolute -right-20 -top-20 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-20 -bottom-20 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <div class="inline-flex p-4 bg-gradient-to-br from-amber-500/20 to-amber-600/10 border border-amber-500/30 rounded-2xl text-amber-400 mb-6 shadow-inner">
+                <i class="fa-solid fa-book-bible text-4xl"></i>
+            </div>
+            
+            <h2 class="font-serif text-3xl md:text-4xl font-bold text-white mb-4">Cuestionario del Libro de Isaías</h2>
+            <p class="text-slate-300 text-base md:text-lg max-w-xl mx-auto mb-8 leading-relaxed">
+                Pon a prueba tu comprensión sobre la paternidad literaria, la estructura tripartita, el contexto histórico de Judá y las profundas profecías mesiánicas del profeta Isaías.
+            </p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 text-left max-w-lg mx-auto">
+                <div class="bg-slate-800/60 border border-slate-700/50 p-4 rounded-xl flex items-center space-x-3">
+                    <i class="fa-solid fa-list-check text-amber-400 text-lg"></i>
+                    <div>
+                        <p class="text-xs text-slate-400">Preguntas</p>
+                        <p class="font-semibold text-sm text-slate-200">10 Desafíos</p>
+                    </div>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/50 p-4 rounded-xl flex items-center space-x-3">
+                    <i class="fa-solid fa-bullseye text-amber-400 text-lg"></i>
+                    <div>
+                        <p class="text-xs text-slate-400">Enfoque</p>
+                        <p class="font-semibold text-sm text-slate-200">Exégesis & Contexto</p>
+                    </div>
+                </div>
+                <div class="bg-slate-800/60 border border-slate-700/50 p-4 rounded-xl flex items-center space-x-3">
+                    <i class="fa-solid fa-graduation-cap text-amber-400 text-lg"></i>
+                    <div>
+                        <p class="text-xs text-slate-400">Retroalimentación</p>
+                        <p class="font-semibold text-sm text-slate-200">Explicaciones</p>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="startQuiz()" class="w-full md:w-auto px-8 py-4 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold rounded-2xl shadow-lg shadow-amber-500/20 transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center space-x-3 mx-auto text-base">
+                <span>Comenzar Evaluación</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- Quiz View -->
+        <div id="quiz-view" class="hidden">
+            <!-- Progress Bar -->
+            <div class="mb-6">
+                <div class="flex justify-between text-xs font-medium text-slate-400 mb-2">
+                    <span id="question-indicator">Pregunta 1 de 10</span>
+                    <span id="progress-percentage">10%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden border border-slate-700/50">
+                    <div id="progress-bar" class="bg-gradient-to-r from-amber-500 to-amber-400 h-full w-[10%] transition-all duration-500 rounded-full"></div>
+                </div>
+            </div>
+
+            <!-- Question Card -->
+            <div class="bg-slate-900/90 border border-slate-800 rounded-3xl p-6 md:p-10 custom-shadow relative">
+                <h3 id="question-text" class="font-serif text-xl md:text-2xl font-bold text-white mb-6 leading-snug"></h3>
+                
+                <!-- Options Container -->
+                <div id="options-container" class="space-y-3.5 mb-8">
+                    <!-- Dynamic Options will be injected here -->
+                </div>
+
+                <!-- Rationale Box -->
+                <div id="rationale-box" class="hidden bg-slate-800/90 border border-slate-700 rounded-2xl p-5 mb-6 transition-all duration-300 animate-fadeIn">
+                    <div class="flex items-start space-x-3">
+                        <div id="rationale-icon" class="p-2 rounded-xl mt-0.5"></div>
+                        <div>
+                            <h4 id="rationale-title" class="font-semibold text-sm mb-1"></h4>
+                            <p id="rationale-text" class="text-sm text-slate-300 leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Next Button -->
+                <div class="flex justify-end">
+                    <button id="next-btn" onclick="nextQuestion()" disabled class="px-6 py-3 bg-slate-800 text-slate-500 font-semibold rounded-xl cursor-not-allowed transition-all duration-300 flex items-center space-x-2 border border-slate-700">
+                        <span id="next-btn-text">Siguiente Pregunta</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results View -->
+        <div id="results-view" class="hidden bg-slate-900/90 border border-slate-800 rounded-3xl p-8 md:p-12 custom-shadow text-center">
+            <div class="inline-flex p-4 bg-amber-500/10 border border-amber-500/30 rounded-2xl text-amber-400 mb-6">
+                <i class="fa-solid fa-award text-4xl"></i>
+            </div>
+            
+            <h2 class="font-serif text-3xl md:text-4xl font-bold text-white mb-2">¡Cuestionario Completado!</h2>
+            <p class="text-slate-400 text-sm md:text-base mb-8">Has finalizado con éxito el repaso del libro de Isaías.</p>
+            
+            <div class="bg-slate-800/80 border border-slate-700/80 rounded-2xl p-6 max-w-sm mx-auto mb-8">
+                <p class="text-xs text-slate-400 uppercase tracking-wider mb-2 font-medium">Puntaje Final</p>
+                <div class="text-5xl font-serif font-bold text-amber-400 mb-2">
+                    <span id="final-score">0</span><span class="text-slate-500 text-3xl">/10</span>
+                </div>
+                <p id="final-message" class="text-sm text-slate-300 font-medium"></p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button onclick="restartQuiz()" class="px-8 py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-bold rounded-xl shadow-lg shadow-amber-500/20 transition-all duration-300 flex items-center justify-center space-x-2">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Volver a Intentar</span>
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="w-full py-6 px-6 border-t border-slate-800/80 bg-slate-900/40 text-center text-xs text-slate-500">
+        <p>Cuestionario basado en el documento exegético del Libro de Isaías &bull; Creado con diseño interactivo avanzado</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        const questions = [
+            {
+                question: "Según el texto introductorio, ¿cuál es la postura de los académicos conservadores frente a las críticas que dividen el libro de Isaías en dos partes con distintos autores (como el supuesto «Deutero-Isaías»)?",
+                answerOptions: [
+                    { text: "Afirman que los capítulos 40-66 fueron escritos por Jeremías durante el exilio.", isCorrect: false, rationale: "Incorrecto. Los críticos se refieren a un supuesto 'Deutero-Isaías', no a Jeremías." },
+                    { text: "Proponen que el libro fue redactado por un comité sacerdotal en el período postexílico.", isCorrect: false, rationale: "Incorrecto. La teoría crítica habla de un autor anónimo posterior, pero la postura conservadora rechaza esta división." },
+                    { text: "Sostienen que sólo existe un autor humano de toda la gran profecía.", isCorrect: true, rationale: "¡Correcto! Los académicos conservadores defienden firmemente la unidad de autoría humana de todo el libro de Isaías." },
+                    { text: "Sugieren que los primeros 39 capítulos son anónimos y los últimos pertenecen a Ezequías.", isCorrect: false, rationale: "Incorrecto. Ezequías es mencionado como rey piadoso, no como el autor de los capítulos finales." }
+                ],
+                hint: "Piensa en la defensa de la unidad tradicional del libro frente a las teorías de división."
+            },
+            {
+                question: "¿Cómo se estructuran formalmente las tres divisiones principales del libro de Isaías según el bosquejo básico presentado en el documento?",
+                answerOptions: [
+                    { text: "Historia de los reyes, profecías contra Babilonia y cánticos de Sión.", isCorrect: false, rationale: "Incorrecto. Aunque Babilonia y los reyes aparecen, este no es el bosquejo estructural tripartito fundamental." },
+                    { text: "Profecías de castigo, paréntesis histórico y profecías de paz.", isCorrect: true, rationale: "¡Correcto! El bosquejo básico divide el libro en capítulos 1-35 (juicio/castigo), 36-39 (paréntesis histórico) y 40-66 (paz/consuelo)." },
+                    { text: "Juicios al reino del norte, cautiverio asirio y restauración mesiánica.", isCorrect: false, rationale: "Incorrecto. El enfoque abarca mucho más que solo el reino del norte y Asiria." },
+                    { text: "Cautiverio babilónico, profecías del Siervo y el juicio final.", isCorrect: false, rationale: "Incorrecto. El paréntesis histórico y el castigo general abarcan otras secciones clave." }
+                ],
+                hint: "Recuerda las tres grandes secciones numéricas del bosquejo básico: castigo, historia y paz."
+            },
+            {
+                question: "Según el análisis del capítulo de apertura (cap. 1), ¿cuál era la condición espiritual predominante en Judá en comparación con Israel durante el inicio del ministerio de Isaías?",
+                answerOptions: [
+                    { text: "Vivían bajo un formalismo e hipocresía religiosa externa sin idolatría burda, pero sin un corazón sincero para Dios.", isCorrect: true, rationale: "¡Correcto! Judá no estaba en la idolatría burda de Israel, pero practicaba una religión vacía y externa carente de verdadero amor a Dios." },
+                    { text: "Practicaban sacrificios humanos y adoración abierta a Baal con templos paganos en Jerusalén.", isCorrect: false, rationale: "Incorrecto. Esa era una característica más propia de las desviaciones extremas de Israel y naciones vecinas." },
+                    { text: "Estaban totalmente entregados al ateísmo y rechazo absoluto de la ley mosaica.", isCorrect: false, rationale: "Incorrecto. Cumplían con los ritos externos de la ley, pero con hipocresía espiritual." },
+                    { text: "Mantenían una comunión perfecta y sincera con Dios, a diferencia del reino del norte.", isCorrect: false, rationale: "Incorrecto. El capítulo 1 denuncia severamente su rebelión e hipocresía." }
+                ],
+                hint: "Considera la diferencia entre cumplir ritos externos y tener un corazón sincero hacia Dios."
+            },
+            {
+                question: "¿Qué atributos específicos sobre la persona del Mesías se revelan en las profecías de Isaías 7:14 y 9:6-7?",
+                answerOptions: [
+                    { text: "Su liderazgo militar político, su reinado terrenal temporal y su origen sacerdotal levítico.", isCorrect: false, rationale: "Incorrecto. Los textos apuntan a su naturaleza divina y eterna, no a un simple liderazgo político temporal." },
+                    { text: "Su nacimiento virginal, su divinidad, su poder infinito y su carácter eterno.", isCorrect: true, rationale: "¡Correcto! Isaías 7:14 menciona el nacimiento virginal y 9:6-7 proclama títulos divinos como 'Dios Fuerte' y 'Padre Eterno'." },
+                    { text: "Su coronación en Roma, su linaje egipcio y su victoria sobre los persas.", isCorrect: false, rationale: "Incorrecto. Estas referencias históricas no corresponden a las profecías mesiánicas de Isaías." },
+                    { text: "Su condición de profeta itinerante, su muerte por enfermedad y su resurrección al tercer día.", isCorrect: false, rationale: "Incorrecto. Aunque el siervo sufre, los textos específicos citados destacan su divinidad y nacimiento." }
+                ],
+                hint: "Revisa los títulos gloriosos dados al Niño que nos es nacido en el capítulo 9."
+            },
+            {
+                question: "¿Qué propósito teológico cumple la sección de mensajes contra las naciones extranjeras (Isaías 13:1-27:13) dentro de la estructura profética?",
+                answerOptions: [
+                    { text: "Recordar que Jehová es el Dios de todas las naciones y que el pecado de cada una debe ser juzgado por Su santidad.", isCorrect: true, rationale: "¡Correcto! Dios es el Creador y Juez universal de todos los pueblos, no solo de Israel y Judá." },
+                    { text: "Anunciar alianzas políticas estratégicas que Judá debía hacer con Egipto y Asiria.", isCorrect: false, rationale: "Incorrecto. Los mensajes son juicios contra esas naciones, no llamados a alianzas pecaminosas." },
+                    { text: "Establecer los límites geográficos del futuro imperio de Salomón restaurado.", isCorrect: false, rationale: "Incorrecto. El propósito es eminentemente moral y de juicio divino universal." },
+                    { text: "Demostrar que Dios solo tiene poder sobre el territorio de Palestina.", isCorrect: false, rationale: "Incorrecto. El texto enfatiza justamente lo opuesto: la soberanía global de Jehová." }
+                ],
+                hint: "Piensa en la soberanía de Dios más allá de las fronteras de Judá."
+            },
+            {
+                question: "Desde la perspectiva del orden cronológico y literario de los capítulos 36 a 39, ¿por qué el profeta Isaías alteró la secuencia histórica al ubicar el relato de la enfermedad de Ezequías (caps. 38-39) después de la invasión asiria (caps. 36-37)?",
+                answerOptions: [
+                    { text: "Porque los rollos originales se desordenaron durante el cautiverio babilónico.", isCorrect: false, rationale: "Incorrecto. No se debió a un error de archivo, sino a un diseño literario deliberado del profeta." },
+                    { text: "Para mantener la ilación temática sobre Asiria en los caps. 36-37 y conectar la visita babilónica con la transición hacia el tema de Babilonia en los caps. 40-66.", isCorrect: true, rationale: "¡Correcto! Asiria concluye en el bloque histórico y los emisarios de Babilonia sirven de puente perfecto para introducir los caps. 40-66." },
+                    { text: "Para ocultar los errores políticos cometidos por el rey Ezequías ante sus consejeros.", isCorrect: false, rationale: "Incorrecto. La Biblia registra abiertamente las fallas de Ezequías." },
+                    { text: "Debido a que los eventos ocurrieron exactamente en ese orden calendario inverso.", isCorrect: false, rationale: "Incorrecto. Cronológicamente la enfermedad ocurrió antes del sitio asirio principal." }
+                ],
+                hint: "Analiza cómo la visita de Babilonia al final del paréntesis conecta con el resto del libro."
+            },
+            {
+                question: "¿Cómo respondió Dios ante la arrogancia del ejército asirio y el ruego en oración del rey Ezequías durante el sitio de Jerusalén en el 701 a.C.?",
+                answerOptions: [
+                    { text: "Destruyó a ciento ochenta y cinco mil soldados asirios en una sola noche.", isCorrect: true, rationale: "¡Correcto! Dios intervino milagrosamente eliminando a 185,000 soldados asirios en una noche, salvando a Jerusalén." },
+                    { text: "Permitió que Asiria conquistara la ciudad pero protegió la vida del rey en el templo.", isCorrect: false, rationale: "Incorrecto. Jerusalén no fue conquistada por Asiria en ese sitio gracias a la intervención divina." },
+                    { text: "Levantó una rebelión interna en Nínive que obligó al ejército a retirarse de inmediato.", isCorrect: false, rationale: "Incorrecto. La destrucción del ejército ocurrió directamente frente a Jerusalén por obra de Dios." },
+                    { text: "Envió una plaga de langostas que devoró todas las provisiones del campamento asirio.", isCorrect: false, rationale: "Incorrecto. El relato bíblico habla de la intervención del ángel de Jehová en el campamento." }
+                ],
+                hint: "Recuerda la intervención milagrosa nocturna contra el campamento de Senaquerib."
+            },
+            {
+                question: "Según la exégesis de los capítulos 40 a 66 presentada en el documento, ¿cuáles son los tres sentidos en los que Isaías utiliza la expresión «el Siervo de Jehová»?",
+                answerOptions: [
+                    { text: "Toda la nación de Israel, el remanente piadoso dentro de la nación, y el Mesías personal que realiza la redención.", isCorrect: true, rationale: "¡Correcto! Estos tres niveles de significado se identifican claramente al estudiar el uso de la frase en el texto." },
+                    { text: "El profeta Isaías mismo, el rey Ezequías y el rey Ciro de Persia.", isCorrect: false, rationale: "Incorrecto. Aunque Ciro y el profeta aparecen en el contexto, no abarcan la triple definición exegética del Siervo." },
+                    { text: "Los sacerdotes del templo, los levitas cantores y los profetas mayores.", isCorrect: false, rationale: "Incorrecto. La categoría teológica del Siervo apunta a Israel, el remanente y el Mesías." },
+                    { text: "El imperio asirio, el imperio babilónico y el reino mesiánico futuro.", isCorrect: false, rationale: "Incorrecto. Los imperios mundiales son instrumentos o enemigos, no el Siervo de Jehová." }
+                ],
+                hint: "Piensa en el colectivo nacional, el grupo fiel interior y la figura individual mesiánica."
+            },
+            {
+                question: "¿Por qué el documento descarta la interpretación de que la nación de Israel sea el sujeto sufriente descrito en Isaías 52:13-53:12 («el siervo sufriente que lleva los pecados»)?",
+                answerOptions: [
+                    { text: "Porque Israel es distinguido del Siervo en el texto, y porque los pecadores no pueden llevar ni expiar voluntaria e inocentemente los pecados de otros.", isCorrect: true, rationale: "¡Correcto! Israel es pecador y es distinguido del Siervo; además, ningún pecador puede expiar los pecados ajenos de forma vicaria e inocente." },
+                    { text: "Porque Israel nunca ha sufrido persecución ni cautiverio a lo largo de su historia.", isCorrect: false, rationale: "Incorrecto. Israel ha sufrido enormemente en la historia; el argumento radica en la inocencia y el carácter vicario." },
+                    { text: "Porque el texto menciona explícitamente el nombre de Jesús en esos versículos.", isCorrect: false, rationale: "Incorrecto. El texto veterotestamentario utiliza pronombres ('él'), cumplidos en Cristo en el Nuevo Testamento." },
+                    { text: "Debido a que la nación de Israel era militarmente muy poderosa para necesitar redención.", isCorrect: false, rationale: "Incorrecto. Israel frecuentemente fue subyugada y espiritualmente infiel." }
+                ],
+                hint: "Analiza la imposibilidad de que una nación pecadora cargue vicariamente con la culpa moral de otros."
+            },
+            {
+                question: "¿Qué condición espiritual impone Isaías en los capítulos finales (caps. 54-66) para que el pueblo pueda experimentar plenamente las magníficas bendiciones de la era mesiánica y el nuevo pacto?",
+                answerOptions: [
+                    { text: "La redención de Israel y el abandono de su religiosidad superficial y pecados, permitiendo incluso la entrada de gentiles creyentes.", isCorrect: true, rationale: "¡Correcto! Se requiere un verdadero arrepentimiento, abandono de la hipocresía y fe, abriendo las puertas también a gentiles creyentes." },
+                    { text: "La reconstrucción inmediata de las murallas de Jerusalén y el pago de tributos a Persia.", isCorrect: false, rationale: "Incorrecto. El énfasis de los capítulos finales es estrictamente espiritual y mesiánico." },
+                    { text: "La separación absoluta de cualquier extranjero y la estricta observancia ritual externa.", isCorrect: false, rationale: "Incorrecto. El texto destaca la integración de gentiles creyentes que se unen al pacto." },
+                    { text: "La conquista militar de las naciones vecinas para establecer un estado teocrático global.", isCorrect: false, rationale: "Incorrecto. El reino mesiánico es instituido por la obra y gracia redentora de Dios." }
+                ],
+                hint: "Recuerda que la religiosidad superficial no tiene lugar en el reino y que se incluye a los gentiles."
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        function startQuiz() {
+            document.getElementById('welcome-view').classList.add('hidden');
+            document.getElementById('quiz-view').classList.remove('hidden');
+            document.getElementById('score-counter').classList.remove('hidden');
+            document.getElementById('total-questions-count').innerText = questions.length;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answered = false;
+            const q = questions[currentQuestion];
+            
+            document.getElementById('question-indicator').innerText = `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('progress-percentage').innerText = `${Math.round(progress)}%`;
+            
+            document.getElementById('question-text').innerText = q.question;
+            
+            const optionsContainer = document.getElementById('options-container');
+            optionsContainer.innerHTML = '';
+            
+            q.answerOptions.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-2xl border border-slate-700/80 bg-slate-800/60 hover:bg-slate-800 hover:border-amber-500/50 transition-all duration-200 text-slate-200 text-sm md:text-base flex items-center justify-between group";
+                btn.innerHTML = `
+                    <span class="flex items-center space-x-3">
+                        <span class="w-7 h-7 rounded-lg bg-slate-700/80 text-slate-300 font-semibold text-xs flex items-center justify-center group-hover:bg-amber-500 group-hover:text-slate-950 transition-colors">${String.fromCharCode(65 + index)}</span>
+                        <span>${option.text}</span>
+                    </span>
+                    <i class="fa-regular fa-circle text-slate-500 group-hover:text-amber-400"></i>
+                `;
+                btn.onclick = () => selectOption(index);
+                optionsContainer.appendChild(btn);
+            });
+
+            document.getElementById('rationale-box').classList.add('hidden');
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = true;
+            nextBtn.className = "px-6 py-3 bg-slate-800 text-slate-500 font-semibold rounded-xl cursor-not-allowed transition-all duration-300 flex items-center space-x-2 border border-slate-700";
+        }
+
+        function selectOption(selectedIndex) {
+            if (answered) return;
+            answered = true;
+
+            const q = questions[currentQuestion];
+            const optionsContainer = document.getElementById('options-container');
+            const buttons = optionsContainer.getElementsByTagName('button');
+
+            q.answerOptions.forEach((option, index) => {
+                const btn = buttons[index];
+                btn.disabled = true;
+                const icon = btn.querySelector('i');
+                
+                if (option.isCorrect) {
+                    btn.className = "w-full text-left p-4 rounded-2xl border border-emerald-500/50 bg-emerald-950/30 text-emerald-100 text-sm md:text-base flex items-center justify-between transition-all duration-300";
+                    icon.className = "fa-solid fa-circle-check text-emerald-400 text-lg";
+                } else if (index === selectedIndex) {
+                    btn.className = "w-full text-left p-4 rounded-2xl border border-rose-500/50 bg-rose-950/30 text-rose-100 text-sm md:text-base flex items-center justify-between transition-all duration-300";
+                    icon.className = "fa-solid fa-circle-xmark text-rose-400 text-lg";
+                } else {
+                    btn.className = "w-full text-left p-4 rounded-2xl border border-slate-800 bg-slate-900/40 text-slate-500 text-sm md:text-base flex items-center justify-between opacity-50";
+                }
+            });
+
+            const selectedOpt = q.answerOptions[selectedIndex];
+            if (selectedOpt.isCorrect) {
+                score++;
+                document.getElementById('current-score').innerText = score;
+            }
+
+            // Show rationale
+            const rationaleBox = document.getElementById('rationale-box');
+            const rationaleIcon = document.getElementById('rationale-icon');
+            const rationaleTitle = document.getElementById('rationale-title');
+            const rationaleText = document.getElementById('rationale-text');
+
+            rationaleBox.classList.remove('hidden');
+            if (selectedOpt.isCorrect) {
+                rationaleBox.className = "bg-emerald-950/40 border border-emerald-500/40 rounded-2xl p-5 mb-6 transition-all duration-300";
+                rationaleIcon.className = "p-2 rounded-xl mt-0.5 bg-emerald-500/20 text-emerald-400";
+                rationaleIcon.innerHTML = '<i class="fa-solid fa-check"></i>';
+                rationaleTitle.className = "font-semibold text-sm mb-1 text-emerald-300";
+                rationaleTitle.innerText = "¡Respuesta Correcta!";
+            } else {
+                rationaleBox.className = "bg-rose-950/40 border border-rose-500/40 rounded-2xl p-5 mb-6 transition-all duration-300";
+                rationaleIcon.className = "p-2 rounded-xl mt-0.5 bg-rose-500/20 text-rose-400";
+                rationaleIcon.innerHTML = '<i class="fa-solid fa-xmark"></i>';
+                rationaleTitle.className = "font-semibold text-sm mb-1 text-rose-300";
+                rationaleTitle.innerText = "Respuesta Incorrecta";
+            }
+            rationaleText.innerText = selectedOpt.rationale;
+
+            // Enable next button
+            const nextBtn = document.getElementById('next-btn');
+            nextBtn.disabled = false;
+            nextBtn.className = "px-6 py-3 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl shadow-lg shadow-amber-500/20 transition-all duration-300 flex items-center space-x-2 cursor-pointer";
+            
+            if (currentQuestion === questions.length - 1) {
+                document.getElementById('next-btn-text').innerText = "Ver Resultados";
+            } else {
+                document.getElementById('next-btn-text').innerText = "Siguiente Pregunta";
+            }
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-view').classList.add('hidden');
+            document.getElementById('score-counter').classList.add('hidden');
+            document.getElementById('results-view').classList.remove('hidden');
+            
+            document.getElementById('final-score').innerText = score;
+            
+            const percentage = (score / questions.length) * 100;
+            const finalMsg = document.getElementById('final-message');
+            
+            if (percentage === 100) {
+                finalMsg.innerText = "¡Excepcional! Dominas profundamente el estudio del profeta Isaías.";
+            } else if (percentage >= 70) {
+                finalMsg.innerText = "¡Excelente desempeño! Tienes un sólido conocimiento del texto.";
+            } else if (percentage >= 40) {
+                finalMsg.innerText = "Buen intento. Te invitamos a repasar los puntos clave del documento.";
+            } else {
+                finalMsg.innerText = "Sigue estudiando el texto y vuelve a intentarlo para reforzar tus conocimientos.";
+            }
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            document.getElementById('current-score').innerText = score;
+            document.getElementById('results-view').classList.add('hidden');
+            document.getElementById('welcome-view').classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
+```eof
+
+### Resumen de mejoras de diseño aplicadas:
+1. **Estética y Tipografía:** Se combinó la tipografía de encabezados *Playfair Display* (con un toque clásico y teológico) con *Inter* para una lectura limpia y moderna.
+2. **Paleta Cromática:** Tonos oscuros sofisticados (`slate-950` a `indigo-950`) contrastados con acentos dorados/ámbar (`amber-500`) y tarjetas con efectos de transparencia (`backdrop-blur`).
+3. **Interactividad Enriquecida:** Barra de progreso animada, indicador de puntaje en tiempo real, opciones con efectos hover interactivos, y cajas de retroalimentación detalladas con íconos para cada respuesta.
+4. **Experiencia de Usuario (UX):** Pantalla de bienvenida atractiva, flujo paso a paso fluido y pantalla final con evaluación personalizada según el puntaje obtenido. 
+
+¡Mucho éxito con tu repaso! Puedes abrir este archivo HTML en cualquier navegador para disfrutar de la experiencia interactiva completa.
