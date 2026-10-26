@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario Interactivo: Libro de Miqueas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Outfit', sans-serif; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-slate-950 via-indigo-950 to-purple-950 min-h-screen text-slate-100 flex items-center justify-center p-4">
+
+    <div class="w-full max-w-2xl bg-slate-900/80 backdrop-blur-xl border border-indigo-500/30 rounded-3xl shadow-2xl overflow-hidden transition-all duration-300">
+        
+        <!-- Header -->
+        <div class="bg-gradient-to-r from-indigo-600 to-purple-600 p-6 text-center relative">
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-white">📖 Libro de Miqueas</h1>
+            <p class="text-indigo-100 text-sm mt-1">Evaluación interactiva basada en notas de estudio</p>
+        </div>
+
+        <!-- Pantalla de Bienvenida -->
+        <div id="welcome-screen" class="p-8 text-center space-y-6">
+            <div class="w-20 h-20 bg-indigo-500/20 rounded-full flex items-center justify-center mx-auto border border-indigo-400/40 text-indigo-300 text-3xl shadow-inner">
+                ✨
+            </div>
+            <h2 class="text-xl font-semibold text-indigo-200">¡Pon a prueba tus conocimientos!</h2>
+            <p class="text-slate-300 text-sm max-w-md mx-auto">
+                Responde a 10 preguntas desafiantes sobre la autoría, el contexto histórico, los discursos de juicio, promesa y perdón, y las enseñanzas clave del profeta Miqueas.
+            </p>
+            <button onclick="startQuiz()" class="px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold rounded-2xl shadow-lg hover:shadow-indigo-500/25 transition-all duration-300 transform hover:-translate-y-0.5">
+                Comenzar Cuestionario
+            </button>
+        </div>
+
+        <!-- Pantalla de Preguntas (Oculta al inicio) -->
+        <div id="quiz-screen" class="p-6 md:p-8 hidden space-y-6">
+            <!-- Barra de progreso -->
+            <div class="space-y-2">
+                <div class="flex justify-between text-xs font-medium text-indigo-300 uppercase tracking-wider">
+                    <span id="question-counter">Pregunta 1 de 10</span>
+                    <span id="progress-percent">10%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="bg-gradient-to-r from-indigo-500 to-purple-500 h-full w-[10%] transition-all duration-300"></div>
+                </div>
+            </div>
+
+            <!-- Contenedor de Pregunta -->
+            <div class="space-y-4">
+                <h3 id="question-text" class="text-lg md:text-xl font-medium text-slate-100 leading-relaxed"></h3>
+                <div id="options-container" class="space-y-3">
+                    <!-- Opciones se inyectan dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Caja de Rationale (Feedback) -->
+            <div id="feedback-box" class="hidden p-4 rounded-2xl border text-sm transition-all animate-fade-in">
+                <p id="feedback-text" class="font-medium"></p>
+            </div>
+
+            <!-- Botón Siguiente -->
+            <div class="flex justify-end pt-2">
+                <button id="next-btn" onclick="nextQuestion()" class="hidden px-6 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-medium rounded-xl shadow-md transition-all">
+                    Siguiente Pregunta →
+                </button>
+            </div>
+        </div>
+
+        <!-- Pantalla de Resultados (Oculta al inicio) -->
+        <div id="result-screen" class="p-8 text-center space-y-6 hidden">
+            <div class="w-20 h-20 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto border border-purple-400/40 text-purple-300 text-3xl shadow-inner animate-bounce">
+                🏆
+            </div>
+            <h2 class="text-2xl font-bold text-white">¡Cuestionario Completado!</h2>
+            <div class="bg-slate-800/60 p-6 rounded-2xl border border-indigo-500/20 max-w-xs mx-auto">
+                <p class="text-sm text-indigo-300">Tu puntaje final:</p>
+                <p id="final-score" class="text-4xl font-extrabold text-white mt-1">0 / 10</p>
+                <p id="score-message" class="text-xs text-slate-400 mt-2"></p>
+            </div>
+            <button onclick="restartQuiz()" class="px-8 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white font-semibold rounded-2xl shadow-lg transition-all">
+                Intentar Nuevamente
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        const questions = [
+            {
+                question: "¿Qué significa el nombre del profeta Miqueas y de qué población procedía?",
+                options: [
+                    { text: "«Dios es mi juez» y procedía de Jerusalén.", isCorrect: false, rationale: "Incorrecto. Su nombre no significa eso y su origen era rural, no en la capital." },
+                    { text: "«¿Quién es como Jehová?» y procedía de Moreset.", isCorrect: true, rationale: "¡Correcto! Miqueas procedía de Moreset (al suroeste de Jerusalén) y su nombre significa exactamente «¿Quién es como Jehová?»." },
+                    { text: "«Mensajero de paz» y procedía de Samaria.", isCorrect: false, rationale: "Incorrecto. Samaria era la capital del norte, mientras que Miqueas procedía de Moreset." },
+                    { text: "«Hijo de la verdad» y procedía de Belén.", isCorrect: false, rationale: "Incorrecto. Belén es mencionada en su profecía sobre el Mesías, pero él era nativo de Moreset." }
+                ]
+            },
+            {
+                question: "¿Durante los reinados de qué reyes del sur desarrolló Miqueas su ministerio (fechado en 735 a.C.)?",
+                options: [
+                    { text: "David, Salomón y Roboam", isCorrect: false, rationale: "Incorrecto. Esos reyes pertenecen al periodo de la monarquía unida y dividida temprana." },
+                    { text: "Jotam, Acaz y Ezequías", isCorrect: true, rationale: "¡Exacto! Miqueas data su ministerio durante los reinados de estos tres reyes del sur de Judá." },
+                    { text: "Josías, Joacaz y Joás", isCorrect: false, rationale: "Incorrecto. Estos reyes gobernaron en periodos posteriores de la historia de Judá." },
+                    { text: "Uzías, Jotam y Manasés", isCorrect: false, rationale: "Incorrecto. Manasés reinó después de Ezequías; los reyes específicos son Jotam, Acaz y Ezequías." }
+                ]
+            },
+            {
+                question: "¿Cuál fue el propósito central del mensaje de Miqueas enviado por Dios a Judá?",
+                options: [
+                    { text: "Llamar al pueblo de vuelta a la rectitud práctica y denunciar la opresión a los pobres.", isCorrect: true, rationale: "¡Muy bien! Miqueas denunció a los líderes por oprimir a los pobres y usó su posición para beneficio propio, llamando a la rectitud práctica." },
+                    { text: "Organizar una rebelión armada contra el imperio de Asiria.", isCorrect: false, rationale: "Incorrecto. El mensaje era de carácter espiritual y moral, llamando al arrepentimiento y anunciando el juicio divino." },
+                    { text: "Construir un templo alternativo fuera de Jerusalén.", isCorrect: false, rationale: "Incorrecto. El templo central de Jerusalén era el adoratorio legítimo, aunque el profeta criticó la corrupción de sus líderes." },
+                    { text: "Establecer nuevas leyes ceremoniales para los sacerdotes levitas.", isCorrect: false, rationale: "Incorrecto. El énfasis de Miqueas estaba en la justicia social y la obediencia sincera por encima de rituales vacíos." }
+                ]
+            },
+            {
+                question: "¿Cómo se divide el esquema básico del libro de Miqueas en sus tres grandes bloques temáticos?",
+                options: [
+                    { text: "Creación, Caída y Redención", isCorrect: false, rationale: "Incorrecto. Ese es un esquema teológico general de toda la Biblia, no específico de Miqueas." },
+                    { text: "Juicio sobre el norte, juicio sobre el sur y juicio sobre las naciones", isCorrect: false, rationale: "Incorrecto. Aunque habla de Samaria y Judá, el esquema formal del libro se divide en castigo, promesa y perdón." },
+                    { text: "Un mensaje de castigo, un mensaje de promesa y un mensaje de perdón", isCorrect: true, rationale: "¡Correcto! El libro se estructura en un mensaje de castigo (caps. 1-2), de promesa (caps. 3-5) y de perdón (caps. 6-7)." },
+                    { text: "Historia antigua, profecía mesiánica y sabiduría sapiencial", isCorrect: false, rationale: "Incorrecto. El contenido es eminentemente profético dividido en castigo, promesa y perdón." }
+                ]
+            },
+            {
+                question: "Mientras Miqueas ministraba en el reino del sur, ¿qué profetas contemporáneos suyos predicaban en el norte y en la corte respectivamente?",
+                options: [
+                    { text: "Jeremías en el norte y Ezequiel en la corte", isCorrect: false, rationale: "Incorrecto. Jeremías y Ezequiel ministraron durante la época del exilio babilónico, mucho después." },
+                    { text: "Elías en el norte y Eliseo en la corte", isCorrect: false, rationale: "Incorrecto. Elías y Eliseo fueron profetas activos en el reino del norte en el siglo anterior." },
+                    { text: "Oseas en el norte e Isaías en la corte", isCorrect: true, rationale: "¡Correcto! Oseas predicaba en el norte ilustrando el amor de Dios, mientras Isaías predicaba en la corte de Jerusalén." },
+                    { text: "Amós en el norte y Daniel en la corte", isCorrect: false, rationale: "Incorrecto. Amós fue anterior y Daniel estuvo en la corte de Babilonia." }
+                ]
+            },
+            {
+                question: "¿Qué profecía mesiánica clave se encuentra en la segunda sección del libro (capítulos 3-5)?",
+                options: [
+                    { text: "Que el Mesías nacería en Belén", isCorrect: true, rationale: "¡Exacto! Una de las profecías más célebres del Antiguo Testamento es que el Mesías saldría de Belén Efrata." },
+                    { text: "Que el Mesías reinaría desde un palacio en Samaria", isCorrect: false, rationale: "Incorrecto. Samaria fue destruida y convertida en un montón de piedras debido a su idolatría." },
+                    { text: "Que el Mesías nacería de una virgen en Nazaret", isCorrect: false, rationale: "Incorrecto. El texto de Miqueas especifica explícitamente a Belén como lugar de origen del gobernante de Israel." },
+                    { text: "Que el Mesías establecería un imperio militar global por la fuerza", isCorrect: false, rationale: "Incorrecto. Su reino trae paz y salvación conforme a las promesas del pacto." }
+                ]
+            },
+            {
+                question: "¿Qué capítulo clave del libro es señalado en el texto como un ataque directo sobre los príncipes y líderes de Judá?",
+                options: [
+                    { text: "El capítulo 1", isCorrect: false, rationale: "Incorrecto. El capítulo 1 se centra en el juicio sobre Samaria y el lamento por Judá." },
+                    { text: "El capítulo 3", isCorrect: true, rationale: "¡Correcto! El capítulo 3 es identificado como el capítulo clave que contiene un ataque severo contra los príncipes y líderes corruptos de Judá." },
+                    { text: "El capítulo 6", isCorrect: false, rationale: "Incorrecto. El capítulo 6 expone lo que Dios requiere de su pueblo (obediencia, amor y humildad)." },
+                    { text: "El capítulo 7", isCorrect: false, rationale: "Incorrecto. El capítulo 7 resalta la confianza en el carácter misericordioso y compasivo de Dios." }
+                ]
+            },
+            {
+                question: "Según Miqueas 6:6-8, ¿qué es lo que Dios prefiere y requiere primordialmente de su pueblo por encima de los sacrificios rituales?",
+                options: [
+                    { text: "Riquezas y ofrendas abundantes para el mantenimiento del templo", isCorrect: false, rationale: "Incorrecto. Los sacrificios rituales y ofrendas sin rectitud interior no satisfacen a Dios en este pasaje." },
+                    { text: "Obediencia, amor y humildad", isCorrect: true, rationale: "¡Muy bien! Dios requiere practicar la justicia, amar la misericordia y caminar humildemente con Él por encima de holocaustos formales." },
+                    { text: "Ayunos prolongados y oraciones públicas diarias", isCorrect: false, rationale: "Incorrecto. El texto destaca valores éticos y espirituales profundos: hacer justicia, amar la misericordia y andar con humildad." },
+                    { text: "Cánticos de alabanza y sacrificios de animales selectos", isCorrect: false, rationale: "Incorrecto. Miqueas cuestiona si Dios se agradaría de millares de carneros, enfatizando en su lugar la conducta recta." }
+                ]
+            },
+            {
+                question: "¿Cómo se describe el carácter de Dios en el capítulo final del libro (Miqueas 7:18-20)?",
+                options: [
+                    { text: "Implacable en su ira y estricto en recordar las faltas", isCorrect: false, rationale: "Incorrecto. Aunque hubo juicio, el carácter final de Dios revelado es de gracia y perdón." },
+                    { text: "Misericordioso, compasivo, amante y fiel a las promesas hechas a Abraham", isCorrect: true, rationale: "¡Correcto! El libro concluye destacando que Dios no se goza en juzgar, sino que es compasivo y fiel a su pacto histórico." },
+                    { text: "Indiferente ante el sufrimiento y los errores humanos", isCorrect: false, rationale: "Incorrecto. Dios interviene tanto para disciplinar como para restaurar con profundo amor." },
+                    { text: "Severo en el juicio y lento para perdonar a los pecadores", isCorrect: false, rationale: "Incorrecto. Las Escrituras afirman que es misericordioso y clemente, no precipitado en condenar." }
+                ]
+            },
+            {
+                question: "¿Cómo comenzaba cada uno de los tres discursos principales contenidos en el libro de Miqueas?",
+                options: [
+                    { text: "Con la expresión: «Oíd»", isCorrect: true, rationale: "¡Exacto! Cada uno de los tres discursos en Miqueas (1:2; 3:1; 6:1) comienza con el llamado de atención: «Oíd»." },
+                    { text: "Con la frase: «Así dice el Señor Todopoderoso»", isCorrect: false, rationale: "Incorrecto. Aunque es una fórmula profética común, la estructura literaria específica de Miqueas usa la expresión «Oíd»." },
+                    { text: "Con un canto de lamento por Jerusalén", isCorrect: false, rationale: "Incorrecto. Los discursos inician con un llamado imperativo a escuchar la palabra de Dios." },
+                    { text: "Con una pregunta retórica hacia las naciones vecinas", isCorrect: false, rationale: "Incorrecto. Comienzan llamando a los pueblos y líderes a prestar atención directa al mensaje divino." }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let answered = false;
+
+        const welcomeScreen = document.getElementById('welcome-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const resultScreen = document.getElementById('result-screen');
+        const questionCounter = document.getElementById('question-counter');
+        const progressPercent = document.getElementById('progress-percent');
+        const progressBar = document.getElementById('progress-bar');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const feedbackBox = document.getElementById('feedback-box');
+        const feedbackText = document.getElementById('feedback-text');
+        const nextBtn = document.getElementById('next-btn');
+        const finalScore = document.getElementById('final-score');
+        const scoreMessage = document.getElementById('score-message');
+
+        function startQuiz() {
+            welcomeScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            answered = false;
+            nextBtn.classList.add('hidden');
+            feedbackBox.classList.add('hidden');
+
+            const q = questions[currentQuestion];
+            questionCounter.textContent = `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+            const percent = ((currentQuestion + 1) / questions.length) * 100;
+            progressPercent.textContent = `${Math.round(percent)}%`;
+            progressBar.style.width = `${percent}%`;
+
+            questionText.textContent = q.question;
+            optionsContainer.innerHTML = '';
+
+            // Mezclar opciones para aleatorizar
+            const shuffledOptions = [...q.options].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = "w-full text-left p-4 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 border border-slate-700/60 transition-all text-slate-200 font-medium text-sm md:text-base flex items-center justify-between group";
+                btn.innerHTML = `<span>${opt.text}</span> <span class="w-5 h-5 rounded-full border border-slate-600 flex items-center justify-center group-hover:border-indigo-400 text-xs"></span>`;
+                btn.onclick = () => selectOption(opt, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function selectOption(option, btnElement) {
+            if (answered) return;
+            answered = true;
+
+            const allButtons = optionsContainer.querySelectorAll('button');
+            allButtons.forEach(b => b.disabled = true);
+
+            if (option.isCorrect) {
+                score++;
+                btnElement.className = "w-full text-left p-4 rounded-2xl bg-emerald-950/60 border border-emerald-500 text-emerald-200 font-medium text-sm md:text-base flex items-center justify-between shadow-lg shadow-emerald-950/50 transition-all";
+                feedbackBox.className = "p-4 rounded-2xl border bg-emerald-950/40 border-emerald-500/40 text-emerald-200 text-sm transition-all";
+                feedbackText.innerHTML = `<strong>¡Correcto!</strong> ${option.rationale}`;
+            } else {
+                btnElement.className = "w-full text-left p-4 rounded-2xl bg-rose-950/60 border border-rose-500 text-rose-200 font-medium text-sm md:text-base flex items-center justify-between shadow-lg shadow-rose-950/50 transition-all";
+                
+                // Mostrar cuál era la correcta
+                allButtons.forEach(b => {
+                    const originalText = b.querySelector('span').textContent;
+                    const matchedOpt = questions[currentQuestion].options.find(o => o.text === originalText);
+                    if (matchedOpt && matchedOpt.isCorrect) {
+                        b.className = "w-full text-left p-4 rounded-2xl bg-emerald-950/40 border border-emerald-500/60 text-emerald-300 font-medium text-sm md:text-base flex items-center justify-between opacity-90";
+                    }
+                });
+
+                feedbackBox.className = "p-4 rounded-2xl border bg-rose-950/40 border-rose-500/40 text-rose-200 text-sm transition-all";
+                feedbackText.innerHTML = `<strong>Incorrecto.</strong> ${option.rationale}`;
+            }
+
+            feedbackBox.classList.remove('hidden');
+            nextBtn.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            quizScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+            finalScore.textContent = `${score} / ${questions.length}`;
+
+            let message = "";
+            const percentage = (score / questions.length) * 100;
+            if (percentage === 100) {
+                message = "¡Impecable! Tienes un dominio total del libro de Miqueas.";
+            } else if (percentage >= 70) {
+                message = "¡Muy bien hecho! Comprendes excelentemente los conceptos y profecías de Miqueas.";
+            } else if (percentage >= 40) {
+                message = "Buen intento. Te invitamos a repasar un poco más las notas de estudio.";
+            } else {
+                message = "Sigue estudiando el texto del profeta Miqueas para mejorar tu puntaje.";
+            }
+            scoreMessage.textContent = message;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            resultScreen.classList.add('hidden');
+            welcomeScreen.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
