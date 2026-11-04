@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuestionario Interactivo: Libro de Hageo</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-900">
+
+  <!-- Header -->
+  <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur sticky top-0 z-50">
+    <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="p-2 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20">
+          <i data-lucide="book-open" class="w-6 h-6"></i>
+        </div>
+        <div>
+          <h1 class="font-bold text-lg text-slate-100 leading-tight">Estudio Bíblico: Hageo</h1>
+          <p class="text-xs text-slate-400">Cuestionario Interactivo</p>
+        </div>
+      </div>
+      <div id="quiz-progress-badge" class="hidden text-xs font-semibold px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-amber-400">
+        Pregunta <span id="current-q-num">1</span> de <span id="total-q-num">10</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="max-w-3xl w-full mx-auto px-4 py-8 flex-grow flex flex-col justify-center">
+
+    <!-- START CARD -->
+    <div id="start-card" class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-8 md:p-10 shadow-2xl backdrop-blur text-center space-y-6">
+      <div class="w-20 h-20 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-3xl flex items-center justify-center mx-auto shadow-inner">
+        <i data-lucide="scroll" class="w-10 h-10"></i>
+      </div>
+      <div class="space-y-2">
+        <h2 class="text-3xl font-extrabold text-white">Cuestionario sobre Hageo</h2>
+        <p class="text-slate-400 max-w-md mx-auto text-sm leading-relaxed">
+          Ponte a prueba sobre el contexto histórico, las fechas clave, los personajes y las lecciones espirituales del libro profético de Hageo.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-3 gap-3 max-w-md mx-auto pt-2 text-left">
+        <div class="p-3 bg-slate-900/50 rounded-xl border border-slate-700/50">
+          <p class="text-xs text-slate-500 font-medium">Preguntas</p>
+          <p class="text-lg font-bold text-slate-200">10</p>
+        </div>
+        <div class="p-3 bg-slate-900/50 rounded-xl border border-slate-700/50">
+          <p class="text-xs text-slate-500 font-medium">Dificultad</p>
+          <p class="text-lg font-bold text-amber-400">Intermedia</p>
+        </div>
+        <div class="p-3 bg-slate-900/50 rounded-xl border border-slate-700/50">
+          <p class="text-xs text-slate-500 font-medium">Respuesta</p>
+          <p class="text-lg font-bold text-emerald-400">Inmediata</p>
+        </div>
+      </div>
+
+      <button id="start-btn" class="w-full sm:w-auto px-8 py-3.5 bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold rounded-xl transition-all shadow-lg hover:shadow-amber-500/25 flex items-center justify-center space-x-2 mx-auto cursor-pointer">
+        <span>Comenzar Cuestionario</span>
+        <i data-lucide="arrow-right" class="w-5 h-5"></i>
+      </button>
+    </div>
+
+    <!-- QUIZ CONTAINER -->
+    <div id="quiz-card" class="hidden space-y-6">
+      <!-- Progress Bar -->
+      <div class="w-full bg-slate-800 h-2 rounded-full overflow-hidden border border-slate-700/50">
+        <div id="progress-bar" class="bg-amber-500 h-full transition-all duration-300 ease-out w-0"></div>
+      </div>
+
+      <!-- Question Box -->
+      <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 md:p-8 shadow-2xl backdrop-blur space-y-6">
+        <h2 id="question-text" class="text-xl md:text-2xl font-bold text-slate-100 leading-snug">
+          <!-- Carga dinámica de la pregunta -->
+        </h2>
+
+        <!-- Options Container -->
+        <div id="options-container" class="space-y-3">
+          <!-- Carga dinámica de las opciones -->
+        </div>
+
+        <!-- Rationale Box -->
+        <div id="rationale-box" class="hidden p-4 rounded-xl border text-sm leading-relaxed">
+          <!-- Explicación de la respuesta -->
+        </div>
+
+        <!-- Action Bar -->
+        <div class="flex items-center justify-between pt-4 border-t border-slate-700/50">
+          <button id="hint-btn" class="text-xs text-slate-400 hover:text-amber-400 flex items-center space-x-1.5 transition-colors cursor-pointer">
+            <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i>
+            <span>Ver pista</span>
+          </button>
+          
+          <button id="next-btn" disabled class="px-6 py-2.5 bg-amber-500 disabled:opacity-40 disabled:cursor-not-allowed hover:bg-amber-400 text-slate-950 font-bold rounded-xl transition-all flex items-center space-x-2 cursor-pointer">
+            <span>Siguiente</span>
+            <i data-lucide="chevron-right" class="w-4 h-4"></i>
+          </button>
+        </div>
+
+        <!-- Hint Banner -->
+        <div id="hint-box" class="hidden p-3 bg-amber-500/10 border border-amber-500/20 text-amber-300 rounded-xl text-xs flex items-start space-x-2">
+          <i data-lucide="info" class="w-4 h-4 text-amber-400 shrink-0 mt-0.5"></i>
+          <span id="hint-text"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS CARD -->
+    <div id="results-card" class="hidden bg-slate-800/60 border border-slate-700/60 rounded-2xl p-8 md:p-10 shadow-2xl backdrop-blur text-center space-y-6">
+      <div id="score-icon-container" class="w-20 h-20 rounded-3xl flex items-center justify-center mx-auto border shadow-inner">
+        <!-- Ícono del resultado -->
+      </div>
+
+      <div>
+        <h2 class="text-2xl font-extrabold text-white">¡Cuestionario Completado!</h2>
+        <p id="score-summary" class="text-slate-400 text-sm mt-1"></p>
+      </div>
+
+      <div class="p-6 bg-slate-900/60 rounded-2xl border border-slate-700/50 max-w-sm mx-auto space-y-2">
+        <p class="text-xs text-slate-400 font-medium">Puntuación Final</p>
+        <div class="text-4xl font-extrabold text-amber-400" id="score-percentage">0%</div>
+        <p id="score-details" class="text-xs text-slate-400">0 de 10 correctas</p>
+      </div>
+
+      <button id="restart-btn" class="px-8 py-3 bg-slate-700 hover:bg-slate-600 text-white font-bold rounded-xl transition-all flex items-center justify-center space-x-2 mx-auto cursor-pointer">
+        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+        <span>Intentar de nuevo</span>
+      </button>
+    </div>
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-slate-800 py-4 text-center text-xs text-slate-500">
+    Basado en el libro profético de Hageo • Cuestionario Interactivo
+  </footer>
+
+  <script>
+    const quizData = [
+      {
+        questionNumber: 1,
+        question: "¿En qué año ejerció Hageo su ministerio profético según las fechas meticulosamente registradas en el texto?",
+        answerOptions: [
+          { text: "538 a.C.", isCorrect: false, rationale: "En 538 a.C. Ciro promulgó el decreto para el regreso, pero la predicación de Hageo inició más tarde." },
+          { text: "520 a.C.", isCorrect: true, rationale: "Hageo data meticulosamente sus mensajes en el año 520 a.C., unos quince años después del primer regreso." },
+          { text: "516 a.C.", isCorrect: false, rationale: "En 516 a.C. concluyó la construcción del templo, cuatro años después de los mensajes de Hageo." },
+          { text: "536 a.C.", isCorrect: false, rationale: "En 536 a.C. se iniciaron los cimientos, pero la obra se detuvo poco después." }
+        ],
+        hint: "Ocurrió quince años después del retorno de los exiliados a Judá."
+      },
+      {
+        questionNumber: 2,
+        question: "¿Cuál fue el objetivo principal del ministerio profético de Hageo?",
+        answerOptions: [
+          { text: "Organizar defensas militares contra Babilonia.", isCorrect: false, rationale: "El enfoque de Hageo fue estrictamente espiritual y centrado en la casa de Dios." },
+          { text: "Recordar al pueblo la prioridad de reconstruir el templo.", isCorrect: true, rationale: "Dios levantó a Hageo para llamar al pueblo de vuelta a las prioridades divinas y reconstruir el templo." },
+          { text: "Redactar las leyes civiles y judiciales de Judá.", isCorrect: false, rationale: "Hageo era un profeta enviado para motivar la reedificación y el arrepentimiento, no un legislador." },
+          { text: "Establecer alianzas políticas con el rey de Persia.", isCorrect: false, rationale: "Su llamado fue hacia la fe, obediencia e inversión en la obra de Dios." }
+        ],
+        hint: "Tiene que ver con restaurar la casa de Dios en Jerusalén."
+      },
+      {
+        questionNumber: 3,
+        question: "¿Quiénes son identificados junto a Hageo como personajes clave en el contexto de su libro?",
+        answerOptions: [
+          { text: "Esdras y Nehemías.", isCorrect: false, rationale: "Esdras y Nehemías lideraron retornos posteriores." },
+          { text: "Zorobabel y Josué.", isCorrect: true, rationale: "Hageo dirige sus mensajes principalmente al gobernador Zorobabel y al sumo sacerdote Josué." },
+          { text: "Ciro y Cambises.", isCorrect: false, rationale: "Eran gobernantes persas, no los líderes judíos del libro." },
+          { text: "Malaquías y Jerjes.", isCorrect: false, rationale: "Pertenecen a periodos cronológicos diferentes." }
+        ],
+        hint: "Se trata del gobernador de Judá y del sumo sacerdote."
+      },
+      {
+        questionNumber: 4,
+        question: "¿Qué causa interna llevó al pueblo a detener la reconstrucción del templo según el diagnóstico divino?",
+        answerOptions: [
+          { text: "Falta absoluta de recursos financieros.", isCorrect: false, rationale: "Tenían recursos para sus propias casas opulentas, demostrando que el problema era la disposición." },
+          { text: "Priorizar el lujo personal y sus casas sobre la casa de Dios.", isCorrect: true, rationale: "Vivían en casas artesonadas mientras descuidaban la casa del Señor, teniendo prioridades desordenadas." },
+          { text: "Un decreto persa que prohibía toda religión.", isCorrect: false, rationale: "Ciro había dado permiso explícito para edificar el templo." },
+          { text: "La pérdida total de la ley de Moisés.", isCorrect: false, rationale: "El pueblo aún se reunía a adorar, pero descuidaba el templo." }
+        ],
+        hint: "Mira la diferencia entre sus 'casas artesonadas' y el templo en ruinas."
+      },
+      {
+        questionNumber: 5,
+        question: "¿Cuánto tiempo duró la inactividad en la reconstrucción del templo antes de la intervención de Hageo?",
+        answerOptions: [
+          { text: "5 años.", isCorrect: false, rationale: "Fue un lapso de desánimo e inactividad mucho más prolongado." },
+          { text: "15 años.", isCorrect: true, rationale: "Tras detenerse en el 535 a.C., pasaron 15 años sin trabajar en el templo hasta el mensaje de Hageo en el 520 a.C." },
+          { text: "30 años.", isCorrect: false, rationale: "Fueron 15 años exactos entre la interrupción y la predicación de Hageo." },
+          { text: "70 años.", isCorrect: false, rationale: "70 años corresponde a la duración total del exilio en Babilonia." }
+        ],
+        hint: "Años transcurridos entre el 535 a.C. y el 520 a.C."
+      },
+      {
+        questionNumber: 6,
+        question: "¿Cómo se manifestó la disciplina de Dios hacia el pueblo por su desobediencia en priorizar sus propios intereses?",
+        answerOptions: [
+          { text: "Con invasiones del ejército babilonio.", isCorrect: false, rationale: "El exilio babilonio ya había concluido." },
+          { text: "Producir insatisfacción y descontento constante en sus vidas.", isCorrect: true, rationale: "Dios provocó que 'sembraran mucho y recogieran poco', sin lograr saciarse ni encontrar satisfacción verdadera." },
+          { text: "Con la pérdida inmediata de sus propiedades.", isCorrect: false, rationale: "Conservaban sus casas, pero no disfrutaban de satisfacción en su trabajo." },
+          { text: "Con una plaga de langostas que destruyó las murallas.", isCorrect: false, rationale: "La disciplina se reflejó en la inutilidad de sus esfuerzos y descontento continuo." }
+        ],
+        hint: "Representado por las metáforas: 'coméis y no os saciáis; bebéis y no quedáis satisfechos'."
+      },
+      {
+        questionNumber: 7,
+        question: "¿Cuánto tiempo pasó desde el mensaje inicial de reprensión de Hageo hasta que se reanudó efectivamente la construcción?",
+        answerOptions: [
+          { text: "Tres semanas.", isCorrect: true, rationale: "El pueblo respondió arrepintiéndose y en unas tres semanas reanudó la edificación del templo." },
+          { text: "Un año entero.", isCorrect: false, rationale: "La respuesta al llamado profético fue sumamente rápida." },
+          { text: "Seis meses.", isCorrect: false, rationale: "El arrepentimiento genuino los movió a actuar en menos de un mes." },
+          { text: "Dos días.", isCorrect: false, rationale: "Tomó unos 24 días (aproximadamente 3 semanas) organizar y comenzar el trabajo." }
+        ],
+        hint: "Fue una respuesta rápida de menos de un mes."
+      },
+      {
+        questionNumber: 8,
+        question: "¿Bajo la dirección de quién se realizó el primer regreso de los exiliados desde Babilonia hacia Judá?",
+        answerOptions: [
+          { text: "Esdras.", isCorrect: false, rationale: "Esdras dirigió el segundo grupo de regreso." },
+          { text: "Zorobabel.", isCorrect: true, rationale: "Cerca de 50.000 personas regresaron en el primer grupo bajo la guía de Zorobabel." },
+          { text: "Nehemías.", isCorrect: false, rationale: "Nehemías dirigió el tercer retorno." },
+          { text: "Josué el Profeta.", isCorrect: false, rationale: "Josué era el Sumo Sacerdote, no el líder del primer contingente." }
+        ],
+        hint: "Fue el líder civil que actuaba como gobernador."
+      },
+      {
+        questionNumber: 9,
+        question: "¿Qué rey persa gobernaba durante el periodo en que profetizaron Hageo y Zacarías (520 a.C.)?",
+        answerOptions: [
+          { text: "Ciro.", isCorrect: false, rationale: "Ciro reinó de 539 a 530 a.C." },
+          { text: "Darío.", isCorrect: true, rationale: "Darío reinaba en Persia (521-486 a.C.) al momento del ministerio de Hageo." },
+          { text: "Jerjes.", isCorrect: false, rationale: "Jerjes (Asuero) reinó de 486 a 465 a.C." },
+          { text: "Artajerjes.", isCorrect: false, rationale: "Reinó posteriormente, entre el 465 y el 423 a.C." }
+        ],
+        hint: "Monarca persa que gobernó del 521 al 486 a.C."
+      },
+      {
+        questionNumber: 10,
+        question: "¿Cuál es una de las principales lecciones o conclusiones espirituales que se derivan del estudio de Hageo?",
+        answerOptions: [
+          { text: "El éxito material asegura la presencia de Dios.", isCorrect: false, rationale: "El materialismo descuidando a Dios trajo insatisfacción al pueblo." },
+          { text: "Cuando no compartimos las prioridades de Dios experimentamos descontento.", isCorrect: true, rationale: "El libro demuestra que al poner las prioridades de Dios en primer lugar y obedecerle, se recibe Su favor y bendición." },
+          { text: "La oposición externa siempre vence los decretos divinos.", isCorrect: false, rationale: "A pesar de la oposición, Dios obró a favor del pueblo cuando decidieron obedecer." },
+          { text: "Los templos físicos no tienen relevancia para la fe.", isCorrect: false, rationale: "Dios llamó explícitamente a reconstruir el templo como muestra de compromiso y adoración." }
+        ],
+        hint: "Relaciona el orden de nuestras prioridades con la bendición y presencia divina."
+      }
+    ];
+
+    // State
+    let currentQuestionIdx = 0;
+    let score = 0;
+    let selectedOptionIdx = null;
+
+    // Elements
+    const startCard = document.getElementById('start-card');
+    const quizCard = document.getElementById('quiz-card');
+    const resultsCard = document.getElementById('results-card');
+    const startBtn = document.getElementById('start-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const restartBtn = document.getElementById('restart-btn');
+    const hintBtn = document.getElementById('hint-btn');
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const rationaleBox = document.getElementById('rationale-box');
+    const hintBox = document.getElementById('hint-box');
+    const hintText = document.getElementById('hint-text');
+    const progressBar = document.getElementById('progress-bar');
+    const quizProgressBadge = document.getElementById('quiz-progress-badge');
+    const currentQNum = document.getElementById('current-q-num');
+    const totalQNum = document.getElementById('total-q-num');
+
+    // Init Icons
+    lucide.createIcons();
+
+    // Handlers
+    startBtn.addEventListener('click', startQuiz);
+    nextBtn.addEventListener('click', handleNextQuestion);
+    restartBtn.addEventListener('click', startQuiz);
+    hintBtn.addEventListener('click', () => hintBox.classList.toggle('hidden'));
+
+    function startQuiz() {
+      currentQuestionIdx = 0;
+      score = 0;
+      selectedOptionIdx = null;
+
+      startCard.classList.add('hidden');
+      resultsCard.classList.add('hidden');
+      quizCard.classList.remove('hidden');
+      quizProgressBadge.classList.remove('hidden');
+
+      totalQNum.textContent = quizData.length;
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = quizData[currentQuestionIdx];
+      currentQNum.textContent = currentQuestionIdx + 1;
+      progressBar.style.width = `${((currentQuestionIdx) / quizData.length) * 100}%`;
+
+      selectedOptionIdx = null;
+      nextBtn.disabled = true;
+      rationaleBox.classList.add('hidden');
+      hintBox.classList.add('hidden');
+      
+      questionText.textContent = `${q.questionNumber}. ${q.question}`;
+      hintText.textContent = q.hint;
+
+      optionsContainer.innerHTML = '';
+      q.answerOptions.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = `w-full p-4 rounded-xl border border-slate-700/60 bg-slate-900/40 hover:bg-slate-800 hover:border-slate-600 transition-all text-left flex items-start space-x-3 group text-slate-200 text-sm font-medium cursor-pointer`;
+        btn.onclick = () => selectOption(idx);
+        btn.innerHTML = `
+          <span class="w-6 h-6 rounded-lg bg-slate-800 text-slate-400 group-hover:bg-amber-500 group-hover:text-slate-950 flex items-center justify-center font-bold text-xs shrink-0 transition-colors border border-slate-700">
+            ${String.fromCharCode(65 + idx)}
+          </span>
+          <span class="pt-0.5 leading-relaxed">${opt.text}</span>
+        `;
+        optionsContainer.appendChild(btn);
+      });
+    }
+
+    function selectOption(optionIdx) {
+      if (selectedOptionIdx !== null) return;
+      
+      selectedOptionIdx = optionIdx;
+      const q = quizData[currentQuestionIdx];
+      const selectedOpt = q.answerOptions[optionIdx];
+      const buttons = optionsContainer.children;
+
+      if (selectedOpt.isCorrect) score++;
+
+      Array.from(buttons).forEach((btn, idx) => {
+        btn.onclick = null;
+        const isThisCorrect = q.answerOptions[idx].isCorrect;
+
+        if (isThisCorrect) {
+          btn.className = 'w-full p-4 rounded-xl border-2 border-emerald-500/80 bg-emerald-500/10 text-emerald-200 text-sm font-medium flex items-start space-x-3';
+        } else if (idx === optionIdx) {
+          btn.className = 'w-full p-4 rounded-xl border-2 border-rose-500/80 bg-rose-500/10 text-rose-200 text-sm font-medium flex items-start space-x-3';
+        } else {
+          btn.className = 'w-full p-4 rounded-xl border border-slate-800 bg-slate-900/20 text-slate-500 text-sm font-medium flex items-start space-x-3 opacity-50';
+        }
+      });
+
+      rationaleBox.textContent = selectedOpt.rationale;
+      rationaleBox.className = `p-4 rounded-xl border text-sm leading-relaxed ${
+        selectedOpt.isCorrect 
+          ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300' 
+          : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+      }`;
+      rationaleBox.classList.remove('hidden');
+
+      nextBtn.disabled = false;
+    }
+
+    function handleNextQuestion() {
+      currentQuestionIdx++;
+      if (currentQuestionIdx < quizData.length) {
+        loadQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      quizCard.classList.add('hidden');
+      quizProgressBadge.classList.add('hidden');
+      resultsCard.classList.remove('hidden');
+
+      const percentage = Math.round((score / quizData.length) * 100);
+      document.getElementById('score-percentage').textContent = `${percentage}%`;
+      document.getElementById('score-details').textContent = `${score} de ${quizData.length} respuestas correctas`;
+
+      const scoreIconContainer = document.getElementById('score-icon-container');
+      const scoreSummary = document.getElementById('score-summary');
+
+      if (percentage >= 80) {
+        scoreIconContainer.className = 'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto border bg-emerald-500/10 border-emerald-500/30 text-emerald-400';
+        scoreIconContainer.innerHTML = '<i data-lucide="award" class="w-10 h-10"></i>';
+        scoreSummary.textContent = '¡Excelente! Tienes un gran dominio del contenido de Hageo.';
+      } else if (percentage >= 50) {
+        scoreIconContainer.className = 'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto border bg-amber-500/10 border-amber-500/30 text-amber-400';
+        scoreIconContainer.innerHTML = '<i data-lucide="check-circle-2" class="w-10 h-10"></i>';
+        scoreSummary.textContent = '¡Buen intento! Tienes conocimientos sólidos sobre el libro de Hageo.';
+      } else {
+        scoreIconContainer.className = 'w-20 h-20 rounded-3xl flex items-center justify-center mx-auto border bg-rose-500/10 border-rose-500/30 text-rose-400';
+        scoreIconContainer.innerHTML = '<i data-lucide="book-open" class="w-10 h-10"></i>';
+        scoreSummary.textContent = 'Te recomendamos repasar el material de estudio y volver a intentarlo.';
+      }
+
+      lucide.createIcons();
+    }
+  </script>
+</body>
+</html>
