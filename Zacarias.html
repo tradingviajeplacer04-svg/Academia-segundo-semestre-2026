@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cuestionario Interactivo: Libro de Zacarías</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        amber: {
+                            50: '#fffbeb',
+                            100: '#fef3c7',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309',
+                            800: '#92400e',
+                            900: '#78350f',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-slate-900 text-slate-100 min-h-screen flex flex-col font-sans antialiased selection:bg-amber-500 selection:text-slate-900">
+
+    <!-- Navbar / Header -->
+    <header class="bg-slate-800/80 backdrop-blur border-b border-slate-700/60 sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <div class="bg-amber-500/10 p-2 rounded-xl border border-amber-500/30 text-amber-400">
+                    <i class="fa-solid fa-scroll text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg text-slate-100 leading-tight">Estudio del Libro de Zacarías</h1>
+                    <p class="text-xs text-slate-400">Cuestionario Interactivo de Evaluación</p>
+                </div>
+            </div>
+            <div id="badge-container" class="text-xs bg-slate-700/50 text-slate-300 border border-slate-600 px-3 py-1.5 rounded-full font-medium flex items-center gap-2">
+                <i class="fa-solid fa-layer-group text-amber-400"></i>
+                <span id="progress-text">Pregunta 1 de 10</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="flex-grow flex items-center justify-center p-4">
+        <div class="w-full max-w-3xl">
+
+            <!-- Progress Bar -->
+            <div class="mb-6 bg-slate-800 rounded-full h-2.5 overflow-hidden border border-slate-700/50">
+                <div id="progress-bar" class="bg-gradient-to-r from-amber-600 to-amber-400 h-full w-0 transition-all duration-300"></div>
+            </div>
+
+            <!-- Quiz Card Container -->
+            <div id="quiz-card" class="bg-slate-800/90 border border-slate-700/80 rounded-2xl p-6 md:p-8 shadow-2xl relative overflow-hidden backdrop-blur-sm">
+                <!-- Decorative background elements -->
+                <div class="absolute -top-24 -right-24 w-48 h-48 bg-amber-500/5 rounded-full blur-3xl pointer-events-none"></div>
+
+                <!-- Question Header -->
+                <div class="flex items-start justify-between gap-4 mb-6">
+                    <span id="question-number-tag" class="bg-amber-500/20 text-amber-400 text-xs font-semibold px-3 py-1 rounded-full border border-amber-500/30">
+                        Pregunta #1
+                    </span>
+                    <button id="hint-btn" onclick="toggleHint()" class="text-xs text-slate-400 hover:text-amber-400 transition flex items-center gap-1.5 bg-slate-700/40 hover:bg-slate-700 px-3 py-1.5 rounded-lg border border-slate-600/50">
+                        <i class="fa-regular fa-lightbulb text-amber-400"></i>
+                        <span>Pista</span>
+                    </button>
+                </div>
+
+                <!-- Hint Box -->
+                <div id="hint-box" class="hidden mb-6 p-4 bg-amber-950/40 border border-amber-500/30 rounded-xl text-amber-200/90 text-sm flex items-start gap-3 animate-fade-in">
+                    <i class="fa-solid fa-circle-info text-amber-400 mt-0.5"></i>
+                    <p id="hint-text"></p>
+                </div>
+
+                <!-- Question Text -->
+                <h2 id="question-text" class="text-xl md:text-2xl font-bold text-slate-100 mb-8 leading-snug">
+                    Cargando pregunta...
+                </h2>
+
+                <!-- Answer Options Grid -->
+                <div id="options-container" class="space-y-3 mb-8">
+                    <!-- Options injected via JavaScript -->
+                </div>
+
+                <!-- Feedback Rationale Box -->
+                <div id="rationale-box" class="hidden mb-6 p-4 rounded-xl text-sm border">
+                    <!-- Rationale content injected via Javascript -->
+                </div>
+
+                <!-- Action Footer -->
+                <div class="flex justify-end border-t border-slate-700/60 pt-6">
+                    <button id="next-btn" onclick="nextQuestion()" disabled class="bg-slate-700 text-slate-400 font-semibold px-6 py-3 rounded-xl transition duration-200 flex items-center gap-2 cursor-not-allowed">
+                        <span>Siguiente</span>
+                        <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Results Summary Card (Initially Hidden) -->
+            <div id="results-card" class="hidden bg-slate-800/90 border border-slate-700/80 rounded-2xl p-8 shadow-2xl text-center relative overflow-hidden backdrop-blur-sm">
+                <div class="w-20 h-20 bg-amber-500/10 rounded-full border border-amber-500/30 flex items-center justify-center mx-auto mb-6">
+                    <i id="score-icon" class="fa-solid fa-trophy text-4xl text-amber-400"></i>
+                </div>
+                
+                <h2 class="text-3xl font-extrabold text-slate-100 mb-2">¡Cuestionario Completado!</h2>
+                <p class="text-slate-400 text-sm mb-6">Has finalizado la evaluación del libro de Zacarías.</p>
+
+                <!-- Score Display -->
+                <div class="bg-slate-900/60 rounded-xl p-6 border border-slate-700/50 mb-8 max-w-sm mx-auto flex items-center justify-around">
+                    <div>
+                        <span class="block text-3xl font-black text-amber-400" id="final-score">0 / 10</span>
+                        <span class="text-xs text-slate-400">Aciertos</span>
+                    </div>
+                    <div class="h-10 w-px bg-slate-700"></div>
+                    <div>
+                        <span class="block text-3xl font-black text-slate-200" id="final-percentage">0%</span>
+                        <span class="text-xs text-slate-400">Puntuación</span>
+                    </div>
+                </div>
+
+                <button onclick="restartQuiz()" class="bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-bold px-8 py-3.5 rounded-xl shadow-lg transition duration-200 flex items-center gap-2 mx-auto">
+                    <i class="fa-solid fa-rotate-right"></i>
+                    <span>Intentar de Nuevo</span>
+                </button>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-4 border-t border-slate-800 text-center text-xs text-slate-500">
+        Estudio Bíblico Exegético — Basado en el documento de introducción a Zacarías
+    </footer>
+
+    <!-- Quiz Logic -->
+    <script>
+        const quizData = {
+            "questions": [
+                {
+                    "questionNumber": 1,
+                    "question": "¿En qué marco de años sitúa Zacarías los mensajes de su ministerio según los datos cronológicos del texto?",
+                    "answerOptions": [
+                        { "text": "520-518 a.C.", "isCorrect": true, "rationale": "El texto especifica meticulosamente (1:1; 7:1) que los mensajes de Zacarías se ubican entre los años 520 y 518 a.C." },
+                        { "text": "586-538 a.C.", "isCorrect": false, "rationale": "Este rango de fechas abarca principalmente el período del cautiverio babilónico y la caída de Jerusalén, no el ministerio de Zacarías." },
+                        { "text": "450-430 a.C.", "isCorrect": false, "rationale": "Estas fechas corresponden a un período posterior del regreso del exilio, cercano al ministerio de Malaquías y Nehemías." },
+                        { "text": "605-597 a.C.", "isCorrect": false, "rationale": "Estas fechas representan las primeras deportaciones a Babilonia en tiempos del profeta Jeremías." }
+                    ],
+                    "hint": "Zacarías dató su ministerio en el mismo período posterior al regreso del primer grupo de exiliados junto a Hageo."
+                },
+                {
+                    "questionNumber": 2,
+                    "question": "¿Con qué propósito principal ministró Zacarías al pueblo que había regresado de Babilonia?",
+                    "answerOptions": [
+                        { "text": "Para ministrar consuelo y hablar de las futuras bendiciones de Dios.", "isCorrect": true, "rationale": "El profeta ministró para el consuelo del pueblo, infundiéndoles valor al revelar las abundantes bendiciones futuras de Dios sobre Israel." },
+                        { "text": "Para reprenderlos por haber detenido definitivamente las obras de construcción.", "isCorrect": false, "rationale": "El pueblo ya había respondido al mensaje de Hageo y reanudado el templo; Zacarías vino a consolarlos y animarlos." },
+                        { "text": "Para organizar las defensas militares ante los ataques inminentes.", "isCorrect": false, "rationale": "Zacarías no desempeñaba un rol militar ni de edificación de muros, sino de profeta espiritual." },
+                        { "text": "Para establecer las leyes administrativas y tributarias de la provincia.", "isCorrect": false, "rationale": "El texto destaca su función profética y sacerdotal enfocada en la esperanza espiritual y futura de la nación." }
+                    ],
+                    "hint": "El pueblo ya había reanudado la construcción del templo tras la exhortación de Hageo."
+                },
+                {
+                    "questionNumber": 3,
+                    "question": "Según el documento, ¿cuál es el capítulo clave del libro de Zacarías?",
+                    "answerOptions": [
+                        { "text": "Capítulo 1", "isCorrect": false, "rationale": "El capítulo 1 contiene la introducción y el inicio de las visiones nocturnas." },
+                        { "text": "Capítulo 3", "isCorrect": false, "rationale": "El capítulo 3 es importante por la visión del sumo sacerdote Josué, pero no el declarado como capítulo clave." },
+                        { "text": "Capítulo 7", "isCorrect": false, "rationale": "El capítulo 7 inicia la sección sobre los cuatro mensajes acerca de los ayunos." },
+                        { "text": "Capítulo 14", "isCorrect": true, "rationale": "El documento señala explícitamente el capítulo 14 como el capítulo clave, titulado 'la venida del Mesías'." }
+                    ],
+                    "hint": "Este capítulo culminante trata de manera central sobre la venida del Mesías."
+                },
+                {
+                    "questionNumber": 4,
+                    "question": "En la cuarta visión nocturna, ¿qué personaje representa a la nación de Israel en su posición sumo-sacerdotal?",
+                    "answerOptions": [
+                        { "text": "El profeta Hageo", "isCorrect": false, "rationale": "Hageo fue un profeta contemporáneo de Zacarías, no la figura sacerdotal observada en la visión." },
+                        { "text": "El sumo sacerdote Josué", "isCorrect": true, "rationale": "Josué de pie con ropas viles ante el Señor representaba a la nación de Israel en su rol sumo-sacerdotal contaminado que Dios purificaría." },
+                        { "text": "El rey Zorobabel", "isCorrect": false, "rationale": "Zorobabel era el gobernador civil de la línea davídica y no aparece desempeñando la vestidura sacerdotal vil en esta visión." },
+                        { "text": "El sacerdote Iddo", "isCorrect": false, "rationale": "Iddo era el abuelo de Zacarías mencionado en la genealogía inicial del libro." }
+                    ],
+                    "hint": "Aparece representado inicialmente con 'ropas viles' delante del Señor antes de ser revestido con ropas limpias."
+                },
+                {
+                    "questionNumber": 5,
+                    "question": "¿Qué simbolizan los olivos que suministran aceite inagotable en la quinta visión nocturna del candelabro?",
+                    "answerOptions": [
+                        { "text": "La riqueza material y agrícola restaurada a Judá.", "isCorrect": false, "rationale": "La visión es de índole espiritual sobre el servicio al Señor y no sobre cosechas o economía." },
+                        { "text": "La divina capacitación para el servicio.", "isCorrect": true, "rationale": "El aceite inagotable provisto por los olivos simboliza el poder e inagotable capacitación divina concedida para el ministerio de Israel." },
+                        { "text": "La destrucción de los ejércitos enemigos de la región.", "isCorrect": false, "rationale": "Los juicios a los enemigos se abordan en otras visiones como las de los cuernos o el rollo." },
+                        { "text": "Los mandamientos morales entregados a Moisés.", "isCorrect": false, "rationale": "El símbolo está directamente vinculado al flujo continuo del Espíritu y la capacitación para la labor del Señor." }
+                    ],
+                    "hint": "Tiene relación directa con la energía inagotable que capacita a la nación para servir a Dios."
+                },
+                {
+                    "questionNumber": 6,
+                    "question": "¿Qué representa la visión del rollo volante (5:1-4) dentro del grupo de visiones nocturnas?",
+                    "answerOptions": [
+                        { "text": "La reconstrucción de las murallas de Jerusalén.", "isCorrect": false, "rationale": "La reedificación de Jerusalén se contempla principalmente en la tercera visión del cordel de medir." },
+                        { "text": "La restauración del linaje davídico.", "isCorrect": false, "rationale": "El rollo volante se enfoca específicamente en la aplicación del juicio divino." },
+                        { "text": "El juicio y la remoción de los pecadores del reinado del Mesías.", "isCorrect": true, "rationale": "El documento indica explícitamente que el rollo volante representa el juicio y la eliminación del pecado/pecadores en el reino mesiánico." },
+                        { "text": "La llegada de noticias diplomáticas favorables de Persia.", "isCorrect": false, "rationale": "Las visiones son representaciones proféticas divinas y no cartas ni decretos terrenales." }
+                    ],
+                    "hint": "Esta sexta visión se enfoca en la purificación moral del futuro reino mediante la eliminación del mal."
+                },
+                {
+                    "questionNumber": 7,
+                    "question": "¿Por qué fue dura la respuesta de Zacarías cuando sus compatriotas le preguntaron sobre si debían seguir ayunando?",
+                    "answerOptions": [
+                        { "text": "Porque el profeta prohibió cualquier tipo de ayuno en la ley.", "isCorrect": false, "rationale": "El profeta no prohibió el ayuno, sino que criticó la actitud y motivación detrás de la práctica ritualista." },
+                        { "text": "Porque ayunaban por los juicios sufridos y no por el pecado que los causó.", "isCorrect": true, "rationale": "Zacarías aclaró que se lamentaban por las consecuencias y el sufrimiento de los eventos históricos, en lugar de dolerse sinceramente del pecado que provocó dichos juicios." },
+                        { "text": "Porque los ayunos debían realizarse únicamente en el primer mes.", "isCorrect": false, "rationale": "La reprensión no dependía de las fechas o del calendario sacerdotal, sino de la falta de arrepentimiento de corazón." },
+                        { "text": "Porque no estaban cumpliendo con los sacrificios de animales correspondientes.", "isCorrect": false, "rationale": "El reclamo profético no fue ritual ni enfocado en sacrificios físicos, sino moral y espiritual." }
+                    ],
+                    "hint": "El profeta los exhortó a dolerse por la causa profunda (el pecado) y no solo por los efectos (las lamentaciones del desastre)."
+                },
+                {
+                    "questionNumber": 8,
+                    "question": "¿Qué aspecto enfatiza primordialmente la «segunda carga» (capítulos 12-14) del libro de Zacarías?",
+                    "answerOptions": [
+                        { "text": "La primera venida del Mesías.", "isCorrect": false, "rationale": "El documento señala que la 'primera carga' (capítulos 9-11) es la que se centra en la primera venida." },
+                        { "text": "La segunda venida del Mesías.", "isCorrect": true, "rationale": "La estructura del resumen especifica que mientras la primera carga enfatiza la primera venida, la segunda carga (12-14) enfatiza la segunda venida." },
+                        { "text": "Las normas del templo en el período de Esdras.", "isCorrect": false, "rationale": "Las cargas proféticas van mucho más allá del periodo inmediato de los exiliados, abordando el escatológico 'día de Jehová'." },
+                        { "text": "El juicio histórico sobre la antigua Babilonia.", "isCorrect": false, "rationale": "Se enfoca en los movimientos del mundo gentil y los eventos finales en torno a Israel durante el día del Señor." }
+                    ],
+                    "hint": "Generalmente, la primera carga considera la venida inicial del Señor, mientras que la segunda proyecta sus eventos finales."
+                },
+                {
+                    "questionNumber": 9,
+                    "question": "De acuerdo con el texto, ¿qué verdad fundamental comunican la segunda visión de los cuatro cuernos y los cuatro carpinteros?",
+                    "answerOptions": [
+                        { "text": "El curso básico de los poderes mundiales gentiles.", "isCorrect": true, "rationale": "El texto explica que esta visión comunica las mismas verdades que Daniel 2 y 7 sobre la trayectoria de los imperios mundiales gentiles." },
+                        { "text": "La necesidad de reconstruir la muralla de Jerusalén en cuatro etapas.", "isCorrect": false, "rationale": "Los cuatro carpinteros/artesanos no simbolizan etapas de edificación edilicia local." },
+                        { "text": "Los cuatro vientos del cielo traedores de bendiciones financieras.", "isCorrect": false, "rationale": "Los cuernos simbolizan poderes opresores mundiales y los artesanos los poderes desmenuzadores organizados por Dios." },
+                        { "text": "La división territorial de Judá en cuatro provincias sirias.", "isCorrect": false, "rationale": "La profecía tiene una escala bélica y de reinos imperiales gentiles idéntica a los libros proféticos apocalípticos." }
+                    ],
+                    "hint": "Esta visión guarda una estrecha relación temática con los imperios descriptos en Daniel 2 y 7."
+                },
+                {
+                    "questionNumber": 10,
+                    "question": "¿Por qué el libro de Zacarías encaja dentro de la pauta de los «profetas mayores» a pesar de ser clasificado entre los 12 profetas menores?",
+                    "answerOptions": [
+                        { "text": "Por la extensa longitud física y cantidad de páginas de sus manuscritos.", "isCorrect": false, "rationale": "Pertenece formalmente a los 12 profetas menores por extensión del libro en comparación con Isaías o Jeremías." },
+                        { "text": "Por la amplia gama de temas trascendentes que abarca su mensaje.", "isCorrect": true, "rationale": "El texto resalta que la variedad de temas (los tiempos de los gentiles, la venida del Mesías y el reino glorioso) lo alinea con la profundidad temática de los profetas mayores." },
+                        { "text": "Porque Zacarías también sirvió como sumo sacerdote en el templo.", "isCorrect": false, "rationale": "Su linaje era sacerdotal, pero la clasificación profética responde al alcance teológico de su mensaje." },
+                        { "text": "Por haber sido escrito de forma previa al exilio babilónico.", "isCorrect": false, "rationale": "Zacarías es un profeta claramente pos-exílico, escrito tras el retorno de Babilonia." }
+                    ],
+                    "hint": "Se debe a la amplitud y profundidad de sus visiones sobre los tiempos gentiles, el Mesías y el reino divino."
+                }
+            ]
+        };
+
+        let currentIdx = 0;
+        let score = 0;
+        let selectedOptionIdx = null;
+
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const hintBoxEl = document.getElementById('hint-box');
+        const hintTextEl = document.getElementById('hint-text');
+        const rationaleBoxEl = document.getElementById('rationale-box');
+        const nextBtn = document.getElementById('next-btn');
+        const progressTextEl = document.getElementById('progress-text');
+        const progressBarEl = document.getElementById('progress-bar');
+        const questionNumberTagEl = document.getElementById('question-number-tag');
+
+        function loadQuestion() {
+            const currentQ = quizData.questions[currentIdx];
+            selectedOptionIdx = null;
+
+            // Reset UI states
+            hintBoxEl.classList.add('hidden');
+            rationaleBoxEl.classList.add('hidden');
+            rationaleBoxEl.className = "hidden mb-6 p-4 rounded-xl text-sm border";
+            nextBtn.disabled = true;
+            nextBtn.className = "bg-slate-700 text-slate-400 font-semibold px-6 py-3 rounded-xl transition duration-200 flex items-center gap-2 cursor-not-allowed";
+
+            // Update texts
+            questionNumberTagEl.innerText = `Pregunta #${currentQ.questionNumber}`;
+            questionTextEl.innerText = currentQ.question;
+            hintTextEl.innerText = currentQ.hint;
+
+            // Update Progress
+            const total = quizData.questions.length;
+            progressTextEl.innerText = `Pregunta ${currentIdx + 1} de ${total}`;
+            progressBarEl.style.width = `${((currentIdx + 1) / total) * 100}%`;
+
+            // Render Options
+            optionsContainerEl.innerHTML = '';
+            currentQ.answerOptions.forEach((opt, idx) => {
+                const button = document.createElement('button');
+                button.className = `w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-start gap-3 bg-slate-800/60 border-slate-700 hover:border-slate-500 hover:bg-slate-700/50 text-slate-200`;
+                button.onclick = () => selectOption(idx);
+
+                const letter = String.fromCharCode(65 + idx);
+                button.innerHTML = `
+                    <span class="opt-badge font-bold text-xs bg-slate-700 text-slate-300 w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5 border border-slate-600">
+                        ${letter}
+                    </span>
+                    <span class="text-sm md:text-base leading-relaxed flex-grow">${opt.text}</span>
+                    <i class="fa-regular fa-circle text-slate-500 shrink-0 mt-1 status-icon"></i>
+                `;
+                optionsContainerEl.appendChild(button);
+            });
+        }
+
+        function toggleHint() {
+            hintBoxEl.classList.toggle('hidden');
+        }
+
+        function selectOption(index) {
+            if (selectedOptionIdx !== null) return; // Prevent changing choice after select
+
+            selectedOptionIdx = index;
+            const currentQ = quizData.questions[currentIdx];
+            const selectedOpt = currentQ.answerOptions[index];
+            const isCorrect = selectedOpt.isCorrect;
+
+            if (isCorrect) score++;
+
+            // Highlight Options
+            const optionButtons = optionsContainerEl.children;
+            currentQ.answerOptions.forEach((opt, idx) => {
+                const btn = optionButtons[idx];
+                const badge = btn.querySelector('.opt-badge');
+                const icon = btn.querySelector('.status-icon');
+
+                btn.classList.remove('hover:border-slate-500', 'hover:bg-slate-700/50');
+
+                if (opt.isCorrect) {
+                    btn.className = "w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-start gap-3 bg-emerald-950/40 border-emerald-500/60 text-emerald-100";
+                    badge.className = "font-bold text-xs bg-emerald-500 text-slate-950 w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5";
+                    icon.className = "fa-solid fa-circle-check text-emerald-400 shrink-0 mt-1";
+                } else if (idx === selectedOptionIdx) {
+                    btn.className = "w-full text-left p-4 rounded-xl border transition-all duration-200 flex items-start gap-3 bg-rose-950/40 border-rose-500/60 text-rose-100";
+                    badge.className = "font-bold text-xs bg-rose-500 text-white w-6 h-6 rounded-lg flex items-center justify-center shrink-0 mt-0.5";
+                    icon.className = "fa-solid fa-circle-xmark text-rose-400 shrink-0 mt-1";
+                } else {
+                    btn.className = "w-full text-left p-4 rounded-xl border opacity-50 border-slate-700 bg-slate-800/40 text-slate-400";
+                }
+            });
+
+            // Show Rationale
+            rationaleBoxEl.classList.remove('hidden');
+            if (isCorrect) {
+                rationaleBoxEl.className = "mb-6 p-4 rounded-xl text-sm border bg-emerald-950/30 border-emerald-500/40 text-emerald-200 flex items-start gap-3";
+                rationaleBoxEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400 mt-0.5"></i><div><strong>¡Correcto!</strong> ${selectedOpt.rationale}</div>`;
+            } else {
+                rationaleBoxEl.className = "mb-6 p-4 rounded-xl text-sm border bg-rose-950/30 border-rose-500/40 text-rose-200 flex items-start gap-3";
+                rationaleBoxEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-rose-400 mt-0.5"></i><div><strong>Incorrecto.</strong> ${selectedOpt.rationale}</div>`;
+            }
+
+            // Enable Next Button
+            nextBtn.disabled = false;
+            nextBtn.className = "bg-gradient-to-r from-amber-600 to-amber-500 hover:from-amber-500 hover:to-amber-400 text-slate-950 font-bold px-6 py-3 rounded-xl shadow-lg transition duration-200 flex items-center gap-2 cursor-pointer";
+        }
+
+        function nextQuestion() {
+            if (currentIdx < quizData.questions.length - 1) {
+                currentIdx++;
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('quiz-card').classList.add('hidden');
+            document.getElementById('badge-container').classList.add('hidden');
+            const resultsCard = document.getElementById('results-card');
+            resultsCard.classList.remove('hidden');
+
+            const total = quizData.questions.length;
+            const percentage = Math.round((score / total) * 100);
+
+            document.getElementById('final-score').innerText = `${score} / ${total}`;
+            document.getElementById('final-percentage').innerText = `${percentage}%`;
+
+            const iconEl = document.getElementById('score-icon');
+            if (percentage >= 80) {
+                iconEl.className = "fa-solid fa-trophy text-4xl text-amber-400";
+            } else if (percentage >= 50) {
+                iconEl.className = "fa-solid fa-medal text-4xl text-amber-400";
+            } else {
+                iconEl.className = "fa-solid fa-book-open text-4xl text-amber-400";
+            }
+        }
+
+        function restartQuiz() {
+            currentIdx = 0;
+            score = 0;
+            document.getElementById('results-card').classList.add('hidden');
+            document.getElementById('badge-container').classList.remove('hidden');
+            document.getElementById('quiz-card').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        // Initialize quiz on load
+        loadQuestion();
+    </script>
+</body>
+</html>
+```eof
+
+He diseñado la interfaz usando un **tema oscuro (Dark Mode)** con tonos slate y acentos color **ámbar/dorado** inspirados en los símbolos del candelabro de Zacarías.
+
+### Características del diseño:
+* **Interactividad fluida:** Selección instantánea con validación de respuesta correcta/incorrecta.
+* **Explicaciones al instante:** Muestra la razón técnica (*rationale*) de por qué una respuesta es correcta o incorrecta al seleccionar una opción.
+* **Pistas desplegables:** Opción de ver una pista sin revelar la respuesta.
+* **Barra de progreso visual y tarjeta de resultados final:** Calcula el puntaje total y el porcentaje obtenido con opción para reiniciar el cuestionario.
